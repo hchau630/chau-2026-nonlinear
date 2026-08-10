@@ -12,14 +12,11 @@
 | 5B | `Lij_0-9/all.pdf` |
 | 5C (left) | `resp_paper_0-9/numerical/dr_10_space-cell_type=PV.pdf` |
 | 5D (left) | `resp_paper_0-9/numerical/dr_10_space-cell_type=SST.pdf` |
-| 5E (left) | `resp_paper_0-9/numerical/dr_10_space-cell_type=VIP.pdf` |
 | 5C (right) | `resp_paper2_0-9/numerical/dr_10_mean_nearby-cell_type=PV.pdf` |
 | 5D (right) | `resp_paper2_0-9/numerical/dr_10_mean_nearby-cell_type=SST.pdf` |
-| 5E (right) | `resp_paper2_0-9/numerical/dr_10_mean_nearby-cell_type=VIP.pdf` |
-| 5F, S5 (top) | `mean_variance_corr_0-9/numerical/var_SST-mean_PYR.pdf` |
-| 5F, S5 (center top) | `mean_variance_corr_0-9/numerical/var_SST-mean_PV.pdf` |
-| 5F, S5 (center bottom) | `mean_variance_corr_0-9/numerical/var_SST-mean_SST.pdf` |
-| 5F, S5 (bottom) | `mean_variance_corr_0-9/numerical/var_SST-mean_VIP.pdf` |
+| 5E, S5 (top) | `mean_variance_corr_0-9/numerical/var_SST-mean_PYR.pdf` |
+| 5E, S5 (center) | `mean_variance_corr_0-9/numerical/var_SST-mean_PV.pdf` |
+| 5E, S5 (bottom) | `mean_variance_corr_0-9/numerical/var_SST-mean_SST.pdf` |
 
 All run commands:
 | Figures | Command |
