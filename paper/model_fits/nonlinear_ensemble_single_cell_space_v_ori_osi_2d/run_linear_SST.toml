@@ -1,0 +1,49 @@
+batch_size = 1
+dataset = { __ref__ = ["fit.toml", "validation_dataset"] }
+# dataset = { __ref__ = ["fit.toml", "validation_dataset"], neurons = { __ref__ = ["fit.toml", "validation_dataset", "neurons"], min_dist = { __call__ = ["builtins", "float", { __environ__ = "MIN_DIST" }] } } }
+# dataset = { __ref__ = ["fit.toml", "validation_dataset"], neurons = { __ref__ = ["fit.toml", "validation_dataset", "neurons"], space_extent = [1250.0, 1100.0], N = 40759 } }
+# dataset = { __ref__ = ["fit.toml", "validation_dataset"], seed = 1 }
+# dataset = { __ref__ = ["fit.toml", "validation_dataset"], model_kwargs = {} }
+# dataset = { __ref__ = ["fit.toml", "validation_dataset"], model_kwargs = { t = [1000.0] } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" } }
+pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, f = { __call__ = ["niarb.nn", "Identity"] } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, tau = [1.0, 0.5, 2.0] }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, f = "Identity" }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, f = "Identity", simulation_kwargs = { options = { max_num_steps = 100000 }, dx_rtol = 5e-5, max_t = 200.0, max_dxdt = 10000.0 } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, nonlinear_kwargs = { max_num_steps = 2, assert_convergence = false } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, nonlinear_kwargs = { max_num_steps = 100, assert_convergence = false } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { options = { max_num_steps = 100000 } } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { options = { max_num_steps = 100000 }, dx_rtol = 5e-5, max_t = 2000.0 } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { options = { max_num_steps = 20000 }, dx_rtol = 1e-4, max_t = 2000.0 } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { method = "tsit5", options = { max_num_steps = 100000 }, dx_rtol = 5e-5, max_t = 2000.0 } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { method = "radauIIA5", options = { step_size = 0.05 }, dx_rtol = 5e-5, max_t = 1000.0 } }
+
+[state_dict]
+__call__ = ["torch", "load"]
+weights_only = true
+map_location = "cpu"
+
+[state_dict.f]
+__call__ = ["niarb.io", "iterdir"]
+path = "fits"
+pattern = "*.pt"
+indices = { __call__ = ["builtins", "int", { __environ__ = "SLURM_ARRAY_TASK_ID" }] }
+
+[out]
+__format__ = "runs/{MODE}_linear_SST/{filename}.pkl"
+# __format__ = "runs/{MODE}_larger/{filename}.pkl"
+# __format__ = "runs/{MODE}_seed-1/{filename}.pkl"
+# __format__ = "runs/{MODE}_wrapped/{filename}.pkl"
+# __format__ = "runs/{MODE}_min_dist-{MIN_DIST}/{filename}.pkl"
+# __format__ = "runs/{MODE}-2/{filename}.pkl"
+# __format__ = "runs/{MODE}-100/{filename}.pkl"
+# __format__ = "runs/{MODE}_linear/{filename}.pkl"
+# __format__ = "runs/{MODE}_larger_linear/{filename}.pkl"
+
+[out.filename]
+__call__ = ["niarb.io", "iterdir"]
+path = "fits"
+pattern = "*.pt"
+stem = true
+indices = { __call__ = ["builtins", "int", { __environ__ = "SLURM_ARRAY_TASK_ID" }] }
+

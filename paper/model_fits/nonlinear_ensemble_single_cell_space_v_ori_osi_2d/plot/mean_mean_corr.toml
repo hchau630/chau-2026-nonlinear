@@ -1,0 +1,47 @@
+tag_names = ["path", "loss"]
+
+[dataframes.__matrix__]
+path = { __call__ = ["niarb.io", "iterdir"], path = { __format__ = "runs/{MODE}" }, pattern = "*.pkl", indices = { __indices__ = { __environ__ = "INDICES" } } }
+
+[[dataframes.__include__]]
+loss = { __eval__ = "float(path.stem)" }
+func = ["niarb.io", "load_data"]
+paths = { __eval__ = "path" }
+# query = "N == 10 and dh == 0"
+query = "N == 10 and distance > 15 and distance < 75"
+pivot_table = { index = ["loss", "instance_idx", "stim_idx", "density"], columns = "cell_type", values = "dr", aggfunc = ["mean"] }
+
+[[plots.__matrix__]]
+x = ["mean_SST"]
+y = ["mean_PYR", "mean_PV", "mean_VIP"]
+
+[[plots.__matrix__]]
+x = ["mean_PV"]
+y = ["mean_PYR", "mean_SST", "mean_VIP"]
+
+[[plots.__include__]]
+name = { __eval__ = "f'{x}-{y}'" }
+func = "lmplot"
+# hue = "density"
+# hue_order = ["spreadout", "compact"]
+col = "loss"
+col_wrap = 5
+statannot = true
+statannot_kws = { verbosity = 0, frameon = false }
+line_kws = { color = "black" }
+scatter_kws = { s = 4, edgecolor = "none", facecolor = "black" }
+facet_kws = { sharex = false, sharey = false }
+height = "paper"
+# aspect = 1.1
+rc_params = "paper"
+
+[plots.__include__.mapping]
+mean_PYR = "Pyr response"
+mean_PV = "PV response"
+mean_SST = "SST response"
+mean_VIP = "VIP response"
+
+[plots.__include__.replace]
+spreadout = "Diffuse"
+compact = "Compact"
+

@@ -1,0 +1,42 @@
+tag_names = ["path", "loss"]
+
+[dataframes.__matrix__]
+path = { __call__ = ["niarb.io", "iterdir"], path = { __format__ = "runs/{MODE}_more" }, pattern = "*.pkl", indices = { __indices__ = { __environ__ = "INDICES" } } }
+
+[[dataframes.__include__]]
+loss = { __eval__ = "float(path.stem)" }
+func = ["niarb.io", "load_data"]
+paths = { __eval__ = "path" }
+
+[[plots]]
+name = { __environ__ = "MODE" }
+groupby = "perturbed_cell_type"
+func = "relplot"
+kind = "line"
+cuts = { distance = { __array__ = "15:151:15.0" }, rel_ori = [0, 22.5, 67.5, 90.0] }
+x = "distance"
+y = "dr"
+hue = "rel_ori"
+col = "loss"
+row = "cell_type"
+row_order = ["PYR", "PV"]
+grid = "yzero"
+height = "paper"
+aspect = 1
+color = "black"
+facet_kws = { sharey = false }
+errordim = "instance_idx"
+errorbar = "se"
+err_kws = { linewidth = 0.5 }
+
+[plots.mapping]
+dr = '$\Delta$ response'
+distance = 'Distance ($\mu$m)'
+rel_ori = '$\Delta$ ori. pref. (deg)'
+cell_type = "Cell type"
+loss = "Loss"
+
+[plots.replace]
+PYR = "E"
+PV = "I"
+

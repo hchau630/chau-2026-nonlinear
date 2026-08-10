@@ -1,0 +1,92 @@
+tag_names = ["kind", "modified_ct", "loss"]
+
+[dataframes]
+__ignore__ = ["mode"]
+
+[dataframes.__matrix__]
+mode = [{ __environ__ = "MODE"}]
+kind = ["original", "modified"]
+modified_ct = ["PV", "SST", "VIP"]
+loss = { __call__ = ["niarb.io", "iterdir"], path = { __format__ = "fits" }, pattern = "*.pt", stem = true, indices = { __indices__ = { __environ__ = "INDICES" } } }
+
+[[dataframes.__include__]]
+kind = "original"
+paths = { __eval__ = "f'runs/{mode}/{loss}.pkl'" }
+
+[[dataframes.__include__]]
+kind = "modified"
+paths = { __eval__ = "f'runs/{mode}_reclinear_{modified_ct}/{loss}.pkl'" }
+
+[[dataframes.__include__]]
+func = ["niarb.io", "load_data"]
+query = "N == 10 and distance > 15 and distance < 75"
+
+[plots.__matrix__]
+name = ["stripplot", "pointplot", "strippointplot"]
+
+[[plots.__include__]]
+pivot_table = { index = ["modified_ct", "loss", "cell_type", "density"], columns = ["kind", "holo_osi"], values = "dr" }
+columns = { cesi = "(modified_high - modified_low) / (original_high - original_low)" }
+func = "catplot"
+x = "modified_ct"
+order = ["PV", "SST", "VIP"]
+y = "cesi"
+col = "density"
+col_order = ["spreadout", "compact"]
+row = "cell_type"
+row_order = ["PYR", "PV", "SST", "VIP"]
+grid = "yzero"
+refline = { y = 1.0, linewidth = 0.8 }
+# height = "paper"
+height = 1.2
+aspect = 1.25
+rc_params = "paper"
+title_verbosity = 0
+legend_title = false
+sharey = false
+color = "black"
+# statannot = true
+# statannot_kws = { kind = "1samp", test = "wilcoxon", test_kws = { alternative = "less" } }
+
+[plots.__include__.mapping]
+cesi = "Cotuned ensemble\nsuppression index"
+cell_type = "Cell type"
+density = "Density"
+modified_ct = "Modified cell type"
+
+[plots.__include__.replace]
+spreadout = "Diffuse"
+compact = "Compact"
+
+[[plots.__include__]]
+name = "stripplot"
+kind = "strip"
+s = 4
+
+[[plots.__include__]]
+name = "pointplot"
+kind = "point"
+errorbar = "sd"
+markersize = 2
+capsize = 0.3
+linestyle = "none"
+linewidth = 0.8
+
+[[plots.__include__]]
+name = "strippointplot"
+kind = "strip"
+s = 4
+alpha = 0.2
+
+[[plots.__include__.layers]]
+func = "pointplot"
+x = "modified_ct"
+order = ["PV", "SST", "VIP"]
+y = "cesi"
+errorbar = "se"
+markersize = 2
+capsize = 0.3
+linestyle = "none"
+linewidth = 0.8
+color = "black"
+

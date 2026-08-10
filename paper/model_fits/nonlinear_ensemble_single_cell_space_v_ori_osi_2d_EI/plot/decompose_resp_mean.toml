@@ -1,0 +1,63 @@
+tag_names = ["mode", "path", "loss"]
+
+[dataframes.__matrix__]
+mode = ["quasi_linear_approx", "second_order_approx_2-1", "second_order_approx_2-2_linear_PV", "second_order_approx_2-2_linear_PYR", "second_order_approx"]
+path = { __call__ = ["niarb.io", "iterdir"], path = "fits", pattern = "*.pt", indices = { __indices__ = { __environ__ = "INDICES" } } }
+
+[[dataframes.__include__]]
+loss = { __eval__ = "float(path.stem)" }
+func = ["niarb.io", "load_data"]
+paths = { __eval__ = 'f"runs/{mode}/{path.stem}.pkl"' }
+query = "N == 10 and distance >= 15 and distance < 75"
+
+[plots]
+__ignore__ = ["type", "indiv"]
+
+[plots.__matrix__]
+type = ["mean"]
+indiv = ["", "_indiv"]
+
+[[plots.__include__]]
+name = { __eval__ = 'f"decompose_resp_{type}{indiv}"' }
+func = "catplot"
+kind = "bar"
+y = "dr"
+x = "mode"
+replace = { quasi_linear_approx = "1", second_order_approx_2-1 = "2,1", second_order_approx_2-2_linear_PV = "2,2-E", second_order_approx_2-2_linear_PYR = "2,2-I", second_order_approx = "Total" }
+order = ["Total", "1", "2,1", "2,2-E", "2,2-I"]
+row = "density"
+row_order = ["spreadout", "compact"]
+grid = "yzero"
+height = 2
+aspect = 1
+# color = "black"
+# facet_kws = { sharey = false }
+sharey = false
+# err_kws = { linewidth = 0.5 }
+
+[plots.__include__.mapping]
+mode = "Order"
+dr = '$\Delta$ response'
+distance = 'Distance ($\mu$m)'
+rel_ori = '$\Delta$ ori. pref. (deg)'
+cell_type = "Cell type"
+density = "Density"
+holo_osi = "Ensemble OSI"
+
+[[plots.__include__]]
+type = "mean"
+hue = "holo_osi"
+hue_order = ["low", "high"]
+
+# [[plots.__include__]]
+# indiv = ""
+# errordim = "loss"
+# errorbar = "sd"
+
+[[plots.__include__]]
+indiv = "_indiv"
+col = "loss"
+groupby = "cell_type"
+errordim = "instance_idx"
+errorbar = "se"
+

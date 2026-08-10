@@ -1,0 +1,78 @@
+tag_names = ["mode", "path", "loss"]
+
+[dataframes.__matrix__]
+mode = ["numerical", "second_order_approx"]
+path = { __call__ = ["niarb.io", "iterdir"], path = "fits", pattern = "*.pt", indices = { __indices__ = { __environ__ = "INDICES" } } }
+
+[[dataframes.__include__]]
+loss = { __eval__ = "float(path.stem)" }
+func = ["niarb.io", "load_data"]
+paths = { __eval__ = 'f"runs/extended/{mode}/{path.stem}.pkl"' }
+
+[plots]
+__ignore__ = ["type", "indiv"]
+
+[plots.__matrix__]
+type = ["space", "mean"]
+indiv = ["", "_indiv"]
+
+[[plots.__include__]]
+name = { __eval__ = 'f"resp_{type}_unperturbed{indiv}"' }
+func = "relplot"
+kind = "line"
+y = "dr"
+style = "mode"
+style_order = ["numerical", "second_order_approx"]
+row = "density"
+row_order = ["spreadout", "compact"]
+grid = "yzero"
+height = 2
+aspect = 1
+color = "black"
+facet_kws = { sharey = false }
+err_kws = { linewidth = 0.5 }
+
+[plots.__include__.mapping]
+mode = "Method"
+dr = '$\Delta$ response'
+distance = 'Distance ($\mu$m)'
+rel_ori = '$\Delta$ ori. pref. (deg)'
+cell_type = "Cell type"
+density = "Density"
+holo_osi = "Ensemble OSI"
+
+[[plots.__include__]]
+type = "space"
+query = "distance > 15"
+cuts = { distance = { __array__ = "15:400:15.0" } }
+groupby = "cell_type"
+x = "distance"
+hue = "N"
+col = "holo_osi"
+col_order = ["low", "high"]
+
+[[plots.__include__]]
+type = "mean"
+query = "dh == 0"
+x = "N"
+hue = "holo_osi"
+hue_order = ["low", "high"]
+col = "cell_type"
+col_order = ["PYR", "PV"]
+
+[[plots.__include__]]
+indiv = ""
+errordim = "loss"
+errorbar = "sd"
+
+[[plots.__include__]]
+indiv = "_indiv"
+groupby = "loss"
+errordim = "instance_idx"
+errorbar = "se"
+
+[[plots.__include__]]
+type = "space"
+indiv = "_indiv"
+groupby = ["cell_type", "loss"]
+

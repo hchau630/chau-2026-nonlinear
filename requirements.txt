@@ -1,0 +1,5 @@
+# some miscellaneous requirements
+git+https://github.com/rtqichen/torchdiffeq  # need the new tsit5 solver
+xarray
+scikit-image
+hsluv

@@ -1,0 +1,67 @@
+tag_names = ["path", "loss"]
+
+[dataframes.__matrix__]
+path = { __call__ = ["niarb.io", "iterdir"], path = { __format__ = "runs/{MODE}" }, pattern = "*.pkl", indices = { __indices__ = { __environ__ = "INDICES" } } }
+
+[[dataframes.__include__]]
+loss = { __eval__ = "float(path.stem)" }
+func = ["niarb.io", "load_data"]
+paths = { __eval__ = "path" }
+
+[plots]
+__ignore__ = ["axes"]
+
+[plots.__matrix__]
+y = ["dr", "dh"]
+axes = ["center", "space", "space_ori"]
+
+[[plots.__include__]]
+name = { __eval__ = "f'{y}_{axes}'" }
+func = "relplot"
+kind = "line"
+style = "stim_type"
+style_order = ["classical", "cross"]
+grid = "yzero"
+height = 2
+aspect = 1
+color = "black"
+facet_kws = { sharey = false }
+errordim = "instance_idx"
+errorbar = "se"
+err_kws = { linewidth = 0.5 }
+
+[plots.__include__.mapping]
+dh = '$\Delta$ input'
+dr = '$\Delta$ response'
+distance = 'Distance ($\mu$m)'
+rel_ori = '$\Delta$ ori. pref. (deg)'
+cell_type = "Cell type"
+contrast = "Contrast"
+stim_size = "Stim. size (deg)"
+stim_type = "Stim. type"
+
+[[plots.__include__]]
+axes = "center"
+query = "distance < 30"
+x = "stim_size"
+col = "loss"
+row = "contrast"
+groupby = "cell_type"
+
+[[plots.__include__]]
+axes = "space"
+cuts = { distance = { __array__ = "0:601:30.0" } }
+x = "distance"
+col = "stim_size"
+row = "contrast"
+groupby = ["loss", "cell_type"]
+
+[[plots.__include__]]
+axes = "space_ori"
+cuts = { distance = { __array__ = "0:601:30.0" }, rel_ori = [0, 22.5, 67.5, 90.0] }
+x = "distance"
+hue = "rel_ori"
+col = "stim_size"
+row = "contrast"
+groupby = ["loss", "cell_type"]
+

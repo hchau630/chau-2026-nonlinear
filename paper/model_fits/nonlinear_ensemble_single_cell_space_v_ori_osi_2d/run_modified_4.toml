@@ -1,0 +1,112 @@
+batch_size = 1
+# dataset = { __ref__ = ["fit.toml", "validation_dataset"] }
+# dataset = { __ref__ = ["fit.toml", "validation_dataset"], model_kwargs = { checkpoint = true }, neurons = { __ref__ = ["fit.toml", "validation_dataset", "neurons"], space_extent = [1050.0, 800.0], N = 24900 } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, f = { __call__ = ["niarb.nn", "SSN"], p = 4 } }
+pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, f = { __call__ = ["niarb.nn", "Match"], cases = { PYR = { __call__ = ["niarb.nn", "SSN"] } }, default = { __call__ = ["niarb.nn", "SSN"], p = 4 } } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, tau = [1.0, 0.5, 2.0] }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, f = "Identity" }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, f = "Identity", simulation_kwargs = { options = { max_num_steps = 100000 }, dx_rtol = 5e-5, max_t = 200.0, max_dxdt = 10000.0 } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, nonlinear_kwargs = { max_num_steps = 2, assert_convergence = false } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, nonlinear_kwargs = { max_num_steps = 100, assert_convergence = false } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { options = { max_num_steps = 100000 } } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { options = { max_num_steps = 100000 }, dx_rtol = 5e-5, max_t = 2000.0 } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { options = { max_num_steps = 20000 }, dx_rtol = 1e-4, max_t = 2000.0 } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { method = "tsit5", options = { max_num_steps = 100000 }, dx_rtol = 5e-5, max_t = 2000.0 } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { method = "radauIIA5", options = { step_size = 0.05 }, dx_rtol = 5e-5, max_t = 1000.0 } }
+
+[dataset]
+abs_window = [950.0, 800.0]
+# abs_window = [750.0, 500.0]
+# abs_window = { PYR = [750.0, 500.0], PV = [950.0, 800.0], SST = [950.0, 800.0], VIP = [950.0, 800.0] }
+N_instantiations = 10
+seed = 0
+# model_kwargs = { t = [1000.0] }
+
+[dataset.neurons]
+# N = 24850
+# N = 24900
+# N = 34089
+N = 40759
+variables = ["cell_type", "space", "ori", "osi"]
+cell_types = ["PYR", "PV", "SST", "VIP"]
+# space_extent = [1050.0, 800.0]
+# space_extent = [1150.0, 1000.0]
+space_extent = [1250.0, 1100.0]
+osi_prob = ["Beta", 0.88, 1.07]
+min_dist = 3.0
+# min_dist = 4.0
+w_dims = []
+
+[[dataset.perturbations.configs.__matrix__]]
+N = [1]
+cell_probs = [{ PYR = 1.0 }]
+# space = [["uniform", [550.0, 410.0]]]
+space = [["uniform", [500.0, 500.0]]]
+osi = [["uniform_", 0.5, 1.0]]
+# we need to find the value k
+# f(vf'[0] + k * dh') - f(vf'[0]) = 3.0 * (f(vf[0] + dh) - f(vf[0]))
+# Since we fitted with a linear model, and f(vf') = vf, we have
+# f(finv(vf[0]) + k * dh') - vf[0] = 3.0 * dh. In particular, all models have dh = 20.0,
+# vf[0] = 0.58, and dh' = 20.58**0.5 - 0.58**0.5 = 3.775, so
+# k = (60.58**0.5 - 0.58**0.5) / 3.775 = 1.86
+value = [1.86]
+repeats = [5]
+
+[[dataset.perturbations.configs.__matrix__]]
+N = [10]
+expr = ["""
+special.uniform(extents, dspace).prod(dim=-1) * \
+special.von_mises(torch.exp(k0 + k1 * osi + k2 * osi**2), dori) * \
+special.ubeta(a, b, osi)\
+"""]
+cell_probs = [{ PYR = 1.0 }]
+density = ["spreadout", "compact"]
+holo_osi = ["low", "high"]
+affine_ori = [true]
+repeats = [5]
+
+[dataset.perturbations.mapping]
+spreadout = { extents = [505.0, 379.5] }
+compact = { extents = [292.5, 258.0] }
+# Note: a, b here are calculated with the formulae a = a1 - a0 + 1, b = b1 - b0 + 1
+# where a0, b0 are the parameters of the distribution of OSI of all neurons,
+# and a1, b1 are the parameters of the Beta distribution of OSI of perturbed neurons.
+low = { a = 1.0, b = 1.0, k0 = -inf, k1 = 0.0, k2 = 0.0, cond = "ensemble_osi(x).item() < 0.05" }
+high = { a = 1.32, b = 0.78, k0 = -4.6, k1 = 11.0, k2 = -6.1 }
+
+[dataset.metrics]
+distance = "min_distance_to_ensemble"
+rel_ori = "abs_relative_ori"
+signed_rel_ori = "signed_relative_ori"
+
+[state_dict]
+__call__ = ["niarb.io", "load_state_dict"]
+weights_only = true
+map_location = "cpu"
+modify = { dh = [[[], "(dh + vf[0])**0.5 - vf[0]**0.5"]], vf = [[["PYR"], "vf[0]**0.5"]] }
+
+[state_dict.path]
+__call__ = ["niarb.io", "iterdir"]
+path = "fits"
+pattern = "*.pt"
+indices = { __call__ = ["builtins", "int", { __environ__ = "SLURM_ARRAY_TASK_ID" }] }
+
+[out]
+__format__ = "runs/{MODE}_modified_4/{filename}.pkl"
+# __format__ = "runs/{MODE}_larger/{filename}.pkl"
+# __format__ = "runs/{MODE}_seed-1/{filename}.pkl"
+# __format__ = "runs/{MODE}_wrapped/{filename}.pkl"
+# __format__ = "runs/{MODE}_min_dist-{MIN_DIST}/{filename}.pkl"
+# __format__ = "runs/{MODE}-2/{filename}.pkl"
+# __format__ = "runs/{MODE}-100/{filename}.pkl"
+# __format__ = "runs/{MODE}_linear/{filename}.pkl"
+# __format__ = "runs/{MODE}_larger_linear/{filename}.pkl"
+
+[out.filename]
+__call__ = ["niarb.io", "iterdir"]
+path = "fits"
+pattern = "*.pt"
+stem = true
+indices = { __call__ = ["builtins", "int", { __environ__ = "SLURM_ARRAY_TASK_ID" }] }
+

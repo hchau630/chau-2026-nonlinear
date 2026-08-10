@@ -1,0 +1,31 @@
+tag_names = ["path", "loss"]
+
+[dataframes.__matrix__]
+path = { __call__ = ["niarb.io", "iterdir"], path = { __format__ = "runs/numerical" }, pattern = "*.pkl", indices = { __indices__ = { __environ__ = "INDICES" } } }
+
+[[dataframes.__include__]]
+loss = { __eval__ = "float(path.stem)" }
+func = ["niarb.io", "load_data"]
+paths = { __eval__ = "path" }
+query = "N == 10 and dh != 0"
+cuts = { osi = [0, 0.25, 0.5, 0.75, 1.0] }
+
+[[plots]]
+name = "ori_osi"
+func = "displot"
+x = "signed_rel_ori"
+hue = "osi"
+# row = "density"
+col = "holo_osi"
+bins = ["circular", -90.0, -67.5, -22.5, 22.5, 67.5, 90.0]
+height = 2
+element = "step"
+fill = false
+stat = "density"
+facet_kws = { sharey = false }
+
+[plots.mapping]
+signed_rel_ori = "Δ ori. pref. (deg)"
+density = "Density"
+holo_osi = "Ensemble OSI"
+

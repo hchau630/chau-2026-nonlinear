@@ -1,0 +1,76 @@
+tag_names = ["path", "loss"]
+
+[dataframes.__matrix__]
+path = { __call__ = ["niarb.io", "iterdir"], path = { __format__ = "runs/matrix_linear_approx_uniform" }, pattern = "*.pkl", indices = { __indices__ = { __environ__ = "INDICES" } } }
+# path = { __call__ = ["niarb.io", "iterdir"], path = { __format__ = "runs/linear_approx_uniform" }, pattern = "*.pkl", indices = { __indices__ = { __environ__ = "INDICES" } } }
+
+[[dataframes.__include__]]
+loss = { __eval__ = "float(path.stem)" }
+func = ["niarb.io", "load_data"]
+paths = { __eval__ = "path" }
+# NOTE: dri = Lij * gj * dhj ==> Lij = dri / (gj * dhj)
+# G calculated based on the following:
+# PYR, PV, SST, VIP spontaneous firing rates: 0.6, 1.35, 0.682, 0.844 Hz
+# Transfer functions: Rectified() for PYR, Ricciardi(scale=1.0, tau=0.01) for PV, Ricciardi(scale=1.0) for SST and VIP
+# columns = { Lij = ["dr / (perturbed_cell_type.map(@G) * dh.max())", { G = { PYR = 1, PV = 4.2844, SST = 2.4333, VIP = 2.9117 } }] }
+columns = { Lij = ["dr / (perturbed_cell_type.map(@G) * dh.max())", { G = { PYR = 1, PV = 4.9846, SST = 2.5180, VIP = 3.0117 } }] }
+
+[plots.__matrix__]
+# name = ["all", "nearby"]
+name = ["all"]
+
+[[plots.__include__]]
+func = "catplot"
+kind = "strip"
+x = "cell_type"
+y = "Lij"
+# order = ["PYR", "PV", "SST", "VIP"]
+order = ["PV", "SST", "VIP"]
+col = "perturbed_cell_type"
+# col_order = ["PYR", "PV", "SST", "VIP"]
+col_order = ["PV", "SST", "VIP"]
+errordim = "loss"
+statannot = true
+statannot_kws = { kind = "1samp", test = "wilcoxon" }
+s = 4
+color = "black"
+grid = "yzero"
+height = "paper"
+# aspect = 1.2
+rc_params = "paper"
+sharey = false
+
+[plots.__include__.mapping]
+Lij = '$L_\mathrm{XY}$'
+perturbed_cell_type = "Y"
+cell_type = "X"
+
+# [[plots.__include__]]
+# name = "nearby"
+# query = "distance < 75"
+
+# [[plots.__include__]]
+# name = { __eval__ = "x" }
+# groupby = "loss"
+# func = "displot"
+# row = "perturbed_cell_type"
+# row_order = ["PYR", "PV", "SST", "VIP"]
+# col = "cell_type"
+# col_order = ["PYR", "PV", "SST", "VIP"]
+# estimator = "mean"
+# element = "step"
+# fill = false
+# stat = "density"
+# grid = "yzero"
+# height = "paper"
+# aspect = 1.1
+# rc_params = "paper"
+# title_template = '$L_{{{row_name} \to {col_name}}}$'
+# # facet_kws = { sharey = false, sharex = "col" }
+# facet_kws = { sharey = false, sharex = false }
+# 
+# [plots.__include__.mapping]
+# Lij = '$L_{ij}$'
+# cell_type = "Cell type"
+# loss = "Loss"
+

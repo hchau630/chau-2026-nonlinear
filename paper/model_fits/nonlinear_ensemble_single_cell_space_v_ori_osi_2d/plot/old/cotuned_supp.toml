@@ -1,0 +1,61 @@
+tag_names = ["modified_ct", "loss"]
+
+[dataframes]
+__ignore__ = ["mode"]
+
+[dataframes.__matrix__]
+mode = [{ __environ__ = "MODE" }]
+modified_ct = ["None", "PV", "SST", "VIP"]
+loss = { __call__ = ["niarb.io", "iterdir"], path = { __format__ = "fits" }, pattern = "*.pt", stem = true, indices = { __indices__ = { __environ__ = "INDICES" } } }
+
+[[dataframes.__include__]]
+func = ["niarb.io", "load_data"]
+paths = { __eval__ = "f'runs/{mode}_reclinear_{modified_ct}/{loss}.pkl'" }
+# min_instances = 8
+query = "N == 10 and distance > 15 and distance < 75"
+pivot_table = { index = ["modified_ct", "loss", "cell_type", "density"], columns = "holo_osi", values = "dr" }
+columns = { ddr = "high - low" }
+
+[[dataframes.__include__]]
+modified_ct = "None"
+paths = { __eval__ = "f'runs/{mode}/{loss}.pkl'" }
+
+[[plots]]
+name = { __environ__ = "MODE" }
+func = "catplot"
+kind = "strip"
+x = "modified_ct"
+order = ["None", "PV", "SST", "VIP"]
+y = "ddr"
+col = "density"
+col_order = ["spreadout", "compact"]
+row = "cell_type"
+row_order = ["PYR", "PV", "SST", "VIP"]
+grid = "yzero"
+# height = "paper"
+height = 1.2
+aspect = 1.25
+rc_params = "paper"
+title_verbosity = 0
+legend_title = false
+sharey = "row"
+# errorbar = "se"
+s = 4
+color = "black"
+statannot = true
+statannot_kws = { kind = "1samp", test = "wilcoxon", test_kws = { alternative = "less" } }
+
+[plots.mapping]
+# dr = "Response (ΔF/F)"
+# distance = 'Distance ($\mu$m)'
+# rel_ori = '$\Delta$ ori. pref. (deg)'
+ddr = "Cotuned - Untuned (ΔF/F)"
+cell_type = "Cell type"
+density = "Density"
+# holo_osi = "Ens. Tuning"
+modified_ct = "Modified cell type"
+
+[plots.replace]
+spreadout = "Diffuse"
+compact = "Compact"
+

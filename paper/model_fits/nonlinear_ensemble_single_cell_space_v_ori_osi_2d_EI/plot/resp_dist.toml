@@ -1,0 +1,86 @@
+tag_names = ["path", "loss"]
+
+[dataframes.__matrix__]
+path = { __call__ = ["niarb.io", "iterdir"], path = { __format__ = "runs/{MODE}" }, pattern = "*.pkl", indices = { __indices__ = { __environ__ = "INDICES" } } }
+
+[[dataframes.__include__]]
+loss = { __eval__ = "float(path.stem)" }
+func = ["niarb.io", "load_data"]
+paths = { __eval__ = "path" }
+query = "N == 10"
+# query = "N == 10 and instance_idx == 0"
+columns = { Hdv2 = "3.6157 * dv**2" }
+
+[plots]
+__ignore__ = ["subset"]
+
+[plots.__matrix__]
+x = ["dv", "Hdv2"]
+subset = ["nearby", "nearby_all", "all"]
+
+[[plots.__include__]]
+name = { __eval__ = "f'{x}_{subset}'" }
+func = "displot"
+groupby = ["loss"]
+hue = "holo_osi"
+hue_order = ["low", "high"]
+col = "density"
+col_order = ["spreadout", "compact"]
+row = "cell_type"
+row_order = ["PYR", "PV"]
+estimator = "mean"
+element = "step"
+fill = false
+common_bins = false
+common_norm = false
+stat = "density"
+# outliers = [0.001, 1]
+grid = "yzero"
+height = "paper"
+# aspect = 0.8
+rc_params = "paper"
+title_verbosity = 0
+# tight_layout = false
+facet_kws = { sharey = false, sharex = false }
+# errordim = "instance_idx"
+# errorbar = "se"
+# err_kws = { linewidth = 0.5 }
+
+[plots.__include__.mapping]
+# dv = '$\Delta$ rec. input'
+dv = '$\delta v_j$'
+dr = "Response (ΔF/F)"
+Hdv2 = '$H_{jj}\delta v_j^2$ (Hz)'
+distance = 'Distance ($\mu$m)'
+rel_ori = '$\Delta$ ori. pref. (deg)'
+cell_type = "Cell type"
+density = "Density"
+holo_osi = "Ens. OSI"
+
+[plots.__include__.replace]
+spreadout = "Diffuse"
+compact = "Compact"
+low = "Untuned"
+high = "Cotuned"
+model = "Model"
+data = "Data"
+PYR = "E"
+PV = "I"
+
+[[plots.__include__]]
+x = "dv"
+outliers = [0.001, 0.999]
+
+[[plots.__include__]]
+x = "Hdv2"
+log_scale = true
+xlim = [3e-8, 1.5]
+
+[[plots.__include__]]
+subset = "nearby"
+query = "distance > 15 and distance < 75"
+
+[[plots.__include__]]
+subset = "nearby_all"
+query = "distance < 75"
+

@@ -1,0 +1,129 @@
+tag_names = ["kind", "loss"]
+
+[dataframes.__matrix__]
+kind = { __call__ = ["json", "loads", { __environ__ = "MODES" } ] }
+loss = { __call__ = ["niarb.io", "iterdir"], path = { __format__ = "fits" }, pattern = "*.pt", stem = true, indices = { __indices__ = { __environ__ = "INDICES" } } }
+
+[[dataframes.__include__]]
+func = ["niarb.io", "load_data"]
+paths = { __eval__ = "f'runs/{kind}/{loss}.pkl'" }
+query = "N == 10"
+
+[plots]
+__ignore__ = ["axes"]
+
+[plots.__matrix__]
+# axes = ["mean", "mean_unperturbed", "space", "ori", "space_ori"]
+# axes = ["mean_nearby", "space", "ori"]
+axes = ["mean_nearby", "mean_nearby2", "space", "ori"]
+
+[[plots.__include__]]
+name = { __eval__ = "f'resp_{axes}'" }
+groupby = ["loss", "cell_type"]
+func = "relplot"
+kind = "line"
+y = "dr"
+col = "density"
+col_order = ["spreadout", "compact"]
+hue = "holo_osi"
+hue_order = ["low", "high"]
+grid = "yzero"
+height = "paper"
+aspect = 0.9
+rc_params = "paper"
+title_verbosity = 0
+# legend_title = false
+# facet_kws = { sharey = false }
+errordim = "instance_idx"
+errorbar = "se"
+# err_kws = { linewidth = 0.5 }
+
+[plots.__include__.mapping]
+dr = "Response (ΔF/F)"
+distance = 'Distance ($\mu$m)'
+rel_ori = '$\Delta$ ori. pref. (deg)'
+cell_type = "Cell type"
+density = "Density"
+holo_osi = "Ens. Tuning"
+# kind = "Mode"
+kind = "Order"
+
+[plots.__include__.replace]
+spreadout = "Diffuse"
+compact = "Compact"
+low = "Untuned"
+high = "Cotuned"
+numerical = "Simulation"
+linear_approx = "Linear"
+second_order_approx = "2nd order"
+quasi_linear_approx = "(1)"
+second_order_approx_2-2_reclinear_except_PV = "(2,2,PV)"
+second_order_approx_2-2_reclinear_except_SST = "(2,2,SST)"
+second_order_approx_2-2_reclinear_except_VIP = "(2,2,VIP)"
+matrix_linear_approx = "Linear"
+matrix_second_order_approx = "2nd order"
+matrix_quasi_linear_approx = "(1)"
+matrix_second_order_approx_2-2_reclinear_except_PV = "(2,2,PV)"
+matrix_second_order_approx_2-2_reclinear_except_SST = "(2,2,SST)"
+matrix_second_order_approx_2-2_reclinear_except_VIP = "(2,2,VIP)"
+
+# [[plots.__include__]]
+# axes = "mean"
+# x = "cell_type"
+
+# [[plots.__include__]]
+# axes = "mean_unperturbed"
+# query = "dh == 0"
+# x = "cell_type"
+
+[[plots.__include__]]
+axes = "mean_nearby"
+func = "catplot"
+kind = "bar"
+query = "distance > 15 and distance < 75"
+x = "kind"
+order = { __call__ = ["json", "loads", { __environ__ = "MODES" } ] } 
+# grid = { __const__ = "None" }
+# facet_kws = {}
+# tick_params = { axis = "x", bottom = false, labeltop = true, labelbottom = false }
+# tick_params = { axis = "x", labelrotation = 30 }
+# despine = { bottom = true, top = false }
+# spine_positions = { top = "zero" }
+statannot = true
+statannot_kws = { test = "ttest_ind", test_kws = { alternative = "greater", equal_var = false, permutations = 999999 } }
+aspect = 1.0
+
+[[plots.__include__]]
+axes = "mean_nearby2"
+func = "catplot"
+kind = "bar"
+query = "distance > 15 and distance < 75"
+row = "kind"
+row_order = { __call__ = ["json", "loads", { __environ__ = "MODES" } ] }
+height = 1.2
+aspect = 0.7
+
+[[plots.__include__]]
+axes = "space"
+query = "distance > 15"
+cuts = { distance = { __array__ = "15:151:15.0" } }
+x = "distance"
+style = "kind"
+style_order = { __call__ = ["json", "loads", { __environ__ = "MODES" } ] }
+
+[[plots.__include__]]
+axes = "ori"
+query = "distance > 15"
+cuts = { distance = { __array__ = "15:151:15.0" }, rel_ori = { __array__ = "-5:96:10" } }
+x = "rel_ori"
+style = "kind"
+style_order = { __call__ = ["json", "loads", { __environ__ = "MODES" } ] }
+
+# [[plots.__include__]]
+# axes = "space_ori"
+# query = "distance > 15"
+# cuts = { distance = { __array__ = "15:250:15.0" }, rel_ori = [0, 22.5, 67.5, 90.0] }
+# x = "distance"
+# col = "cell_type"
+# hue = "rel_ori"
+

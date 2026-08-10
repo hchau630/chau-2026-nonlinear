@@ -1,0 +1,138 @@
+tag_names = ["kind", "path", "loss"]
+
+[dataframes.__matrix__]
+kind = ["model", "data"]
+path = { __call__ = ["niarb.io", "iterdir"], path = { __format__ = "runs/{MODE}" }, pattern = "*.pkl", indices = { __indices__ = { __environ__ = "INDICES" } } }
+
+[[dataframes.__include__]]
+loss = { __eval__ = "float(path.stem)" }
+
+[[dataframes.__include__]]
+kind = "model"
+func = ["niarb.io", "load_data"]
+paths = { __eval__ = "path" }
+
+[[dataframes.__include__]]
+kind = "data"
+func = ["niarb.viz", "sample_df"]
+# df = { __call__ = ["pandas", "concat", { __call__ = ["niarb.io", "load_data"], paths = ["data/ensemble_space_ori_xy_data.pkl", "data/ensemble_space_v_ori_xy_data.pkl", "data/single_cell_space_xy_data.pkl"], uncuts = ["distance", "rel_ori"] }] }
+# df = { __call__ = ["pandas", "concat", { __call__ = ["niarb.io", "load_data"], paths = ["data/ensemble_space_ori_xy_data.pkl", "data/ensemble_space_v_ori_xy_data.pkl"], uncuts = ["distance", "rel_ori"] }] }
+df = { __call__ = ["pandas", "concat", { __call__ = ["niarb.io", "load_data"], paths = ["data/ensemble_space_ori_xy_data.pkl", "data/ensemble_space_v_ori_osi_xy_data.pkl"], uncuts = ["distance", "rel_ori", "osi"] }] }
+y = "dr"
+yerr = "dr_se"
+index = "instance_idx"
+errorbar = "se"
+
+[plots]
+__ignore__ = ["N", "axes"]
+
+[plots.__matrix__]
+N = [1, 10]
+axes = ["mean", "mean_unperturbed", "space", "ori", "space_ori"]
+
+[[plots.__include__]]
+name = { __eval__ = "f'resp_{N}_{axes}'" }
+func = "relplot"
+kind = "line"
+y = "dr"
+style = "kind"
+style_order = ["model", "data"]
+groupby = "cell_type"
+col = "loss"
+grid = "yzero"
+height = 2
+aspect = 1
+color = "black"
+facet_kws = { sharey = false }
+errordim = "instance_idx"
+errorbar = "se"
+err_kws = { linewidth = 0.5 }
+
+[plots.__include__.mapping]
+dr = '$\Delta$ response'
+distance = 'Distance ($\mu$m)'
+rel_ori = '$\Delta$ ori. pref. (deg)'
+cell_type = "Cell type"
+density = "Density"
+holo_osi = "Ensemble OSI"
+
+[[plots.__include__]]
+N = 1
+query = "distance > 15 and N == 1"
+
+[[plots.__include__]]
+N = 10
+query = "distance > 15 and N == 10 and holo_osi == 'high'"
+row = "density"
+row_order = ["spreadout", "compact"]
+
+[[plots.__include__]]
+axes = "mean"
+# func = "catplot"
+# kind = "point"
+style = { __const__ = "None" }
+
+[[plots.__include__]]
+axes = "space"
+cuts = { distance = { __array__ = "15:400:15.0" } }
+x = "distance"
+
+[[plots.__include__]]
+axes = "ori"
+cuts = { distance = { __array__ = "15:400:15.0" }, rel_ori = { __array__ = "-5:96:10" } }
+x = "rel_ori"
+
+[[plots.__include__]]
+axes = "space_ori"
+cuts = { distance = { __array__ = "15:400:15.0" }, rel_ori = [0, 22.5, 67.5, 90.0] }
+x = "distance"
+hue = "rel_ori"
+
+[[plots.__include__]]
+N = 10
+axes = "space"
+query = "distance > 15 and N == 10 and (kind == 'model' or rel_ori.isna())"
+hue = "holo_osi"
+hue_order = ["low", "high"]
+
+[[plots.__include__]]
+N = 1
+axes = "mean"
+query = "kind == 'model' and N == 1"
+x = "cell_type"
+groupby = { __const__ = "None" }
+
+[[plots.__include__]]
+N = 10
+axes = "mean"
+query = "kind == 'model' and N == 10"
+x = "holo_osi"
+
+[[plots.__include__]]
+N = 1
+axes = "mean_unperturbed"
+query = "kind == 'model' and N == 1 and dh == 0"
+x = "cell_type"
+groupby = { __const__ = "None" }
+
+[[plots.__include__]]
+N = 10
+axes = "mean_unperturbed"
+query = "kind == 'model' and N == 10 and dh == 0"
+x = "holo_osi"
+
+[[plots.__include__]]
+N = 1
+axes = "ori"
+query = "distance > 15 and N == 1 and osi > 0.33 and `space[0]` > -250 and `space[0]` < 250 and `space[1]` > -250 and `space[1]` < 250"
+
+[[plots.__include__]]
+N = 1
+axes = "space_ori"
+query = "distance > 15 and N == 1 and osi > 0.25"
+
+[[plots.__include__]]
+N = 10
+axes = "space_ori"
+query = "distance > 15 and N == 10 and holo_osi == 'high' and osi > 0.25"
+

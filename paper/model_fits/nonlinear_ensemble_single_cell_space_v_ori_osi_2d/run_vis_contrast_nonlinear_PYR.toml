@@ -1,0 +1,144 @@
+batch_size = 1
+# dataset = { __ref__ = ["fit.toml", "validation_dataset"] }
+# dataset = { __ref__ = ["fit.toml", "validation_dataset"], neurons = { __ref__ = ["fit.toml", "validation_dataset", "neurons"], min_dist = { __call__ = ["builtins", "float", { __environ__ = "MIN_DIST" }] } } }
+# dataset = { __ref__ = ["fit.toml", "validation_dataset"], neurons = { __ref__ = ["fit.toml", "validation_dataset", "neurons"], space_extent = [1250.0, 1100.0], N = 40759 } }
+# dataset = { __ref__ = ["fit.toml", "validation_dataset"], seed = 1 }
+# dataset = { __ref__ = ["fit.toml", "validation_dataset"], model_kwargs = {} }
+# dataset = { __ref__ = ["fit.toml", "validation_dataset"], model_kwargs = { t = [1000.0] } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, tau = [1.0, 0.5, 2.0] }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, f = "Identity" }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, f = "Identity", simulation_kwargs = { options = { max_num_steps = 100000 }, dx_rtol = 5e-5, max_t = 200.0, max_dxdt = 10000.0 } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, nonlinear_kwargs = { max_num_steps = 2, assert_convergence = false } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, nonlinear_kwargs = { max_num_steps = 100, assert_convergence = false } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { options = { max_num_steps = 100000 } } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { options = { max_num_steps = 100000 }, dx_rtol = 5e-5, max_t = 2000.0 } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { options = { max_num_steps = 20000 }, dx_rtol = 1e-4, max_t = 2000.0 } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { method = "tsit5", options = { max_num_steps = 100000 }, dx_rtol = 5e-5, max_t = 2000.0 } }
+# pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, simulation_kwargs = { method = "radauIIA5", options = { step_size = 0.05 }, dx_rtol = 5e-5, max_t = 1000.0 } }
+
+[dataset]
+__ref__ = ["fit.toml", "validation_dataset"]
+# model_kwargs = { t = { __array__ = "40:60:20j" }, avg_t = true } 
+model_kwargs = { t = { __array__ = "10:20:20j" }, avg_t = true, newton_kwargs = { bounds = [-10.0, 4.0] } }
+# model_kwargs = { newton_kwargs = { bounds = [-10.0, 4.0] } }
+
+[[dataset.perturbations.configs.__matrix__]]
+N = [10]
+expr = ["""
+special.uniform(extents, dspace).prod(dim=-1) * \
+special.von_mises(torch.exp(k0 + k1 * osi + k2 * osi**2), dori) * \
+special.ubeta(a, b, osi)\
+"""]
+cell_probs = [{ PYR = 1.0 }]
+# density = ["spreadout", "compact"]
+# holo_osi = ["low", "high"]
+density = ["compact"]
+holo_osi = ["high"]
+affine_ori = [true]
+# value = [0.0001]
+# value = [0.001]
+# value = [0.01]
+repeats = [5]
+
+[dataset.perturbations.mapping]
+compact = { extents = [292.5, 258.0] }
+high = { a = 1.32, b = 0.78, k0 = -4.6, k1 = 11.0, k2 = -6.1 }
+
+[dataset.metrics]
+distance = "min_distance_to_ensemble"
+rel_ori = "abs_relative_ori"
+signed_rel_ori = "signed_relative_ori"
+radius = "radius"
+abs_ori = "abs_ori"
+
+[pipeline.model]
+__ref__ = ["fit.toml", "validation_pipeline", "model"]
+mode = { __environ__ = "MODE" }
+f = { __call__ = ["niarb.nn", "Ricciardi"], scale = 0.967 }
+# simulation_kwargs = { method = "tsit5", options = { max_num_steps = 100000 }, dx_rtol = 5e-4, dx_atol = 5e-6, max_t = 200.0, max_dxdt = 100000.0, max_x = 1000.0 }
+simulation_kwargs = { options = { max_num_steps = 100000 } }
+
+[pipeline.scaler]
+__call__ = ["niarb.nn", "NamedSequential"]
+
+[pipeline.scaler.modules.scaler]
+__call__ = ["niarb.nn.modules.pipeline", "Scaler"]
+
+[pipeline.scaler.modules.vis_rel_delta_rate]
+__call__ = ["niarb.nn.modules.vis", "VisRelDeltaRate"]
+a_optim = false
+s_optim = false
+k_optim = false
+# From Mossing et al. (20221) Figure 1. Values obtained with command
+# `python process_mossing_data.py mossing_data -t`
+a_init = [
+    [0.0000, 0.0000,  0.0000,  0.0000],
+    [0.4487, 0.6106,  0.9134,  0.1210],
+    [0.5344, 0.7392,  2.7259, -0.5554],
+    [0.5255, 0.5612,  5.3720, -0.6451],
+    [0.5090, 0.3345,  8.1242, -0.4052],
+    [0.9839, 0.7696, 11.6645, -0.5821],
+]
+# From Di Santo et al. (2025) Figure S6, regression of rate field width against size
+# is approximately:
+# PYR: σ = 22.3 deg at size = 0 deg, σ = 36.5 deg at size = 100 deg => 26.6 deg at size = 30 deg
+# PV:  σ = 20.7 deg at size = 0 deg, σ = 20.7 deg at size = 100 deg => 20.7 deg at size = 30 deg
+# SST: σ = 10.7 deg at size = 0 deg, σ = 21.0 deg at size = 100 deg => 13.8 deg at size = 30 deg
+# VIP: σ = 22.4 deg at size = 0 deg, σ = 22.4 deg at size = 100 deg => 22.4 deg at size = 30 deg
+# This is then multiplied by 31.6 μm/deg, since the cortical magnification factor of mouse V1 is
+# roughly 0.001 mm^2/deg^2 (Beest et al. 2021).
+s_init = [840.6, 654.1, 436.1, 707.8]
+# Neill and Stryker (2008) showed contrast-invariance of tuning curves in mouse V1, though
+# layer and cell types are not identified. On the contrary, Li et al. (2012) showed contrast-
+# dependent tuning in mouse V1, though it was in L4. For simplicity we assume contrast-invariance
+# for PYR, PV, and SST. VIP, on the other hand, seems less orientation-tuned at high-contrast
+# (Millman et al. 2021), so we just somewhat arbitrarily decrease kappa with contrast. Also,
+# because VIP are suppressed, we need to flip the sign of kappa.
+k_init = [
+    [0.0, 0.0, 0.0,  0.0], # 0% contrast
+    [0.5, 0.5, 0.5, -0.5], # 6% contrast
+    [0.5, 0.5, 0.5, -0.3], # 12% contrast
+    [0.5, 0.5, 0.5, -0.2], # 25% contrast
+    [0.5, 0.5, 0.5, -0.1], # 50% contrast
+    [0.5, 0.5, 0.5, -0.05], # 100% contrast
+]
+cell_types = ["PYR", "PV", "SST", "VIP"]
+batch_coords = { contrast = [0, 6, 12, 25, 50, 100] }
+# batch_coords = { contrast = [0, 6, 12, 25, 50] }
+# batch_coords = { contrast = [0, 6, 12, 25] }
+# batch_coords = { contrast = [0, 6, 12] }
+# batch_coords = { contrast = [0, 6] }
+# batch_coords = { contrast = [0] }
+
+[state_dict]
+__call__ = ["niarb.io", "load_state_dict"]
+weights_only = true
+map_location = "cpu"
+# assume fitted dh = 17.58
+modify = { dh = [[[], 1.4132]], vf = [[["PYR"], -0.1264]] }
+
+[state_dict.path]
+__call__ = ["niarb.io", "iterdir"]
+path = "fits"
+pattern = "*.pt"
+indices = { __call__ = ["builtins", "int", { __environ__ = "SLURM_ARRAY_TASK_ID" }] }
+
+[out]
+__format__ = "runs/{MODE}_vis_contrast_nonlinear_PYR/{filename}.pkl"
+# __format__ = "runs/{MODE}_larger/{filename}.pkl"
+# __format__ = "runs/{MODE}_seed-1/{filename}.pkl"
+# __format__ = "runs/{MODE}_wrapped/{filename}.pkl"
+# __format__ = "runs/{MODE}_min_dist-{MIN_DIST}/{filename}.pkl"
+# __format__ = "runs/{MODE}-2/{filename}.pkl"
+# __format__ = "runs/{MODE}-100/{filename}.pkl"
+# __format__ = "runs/{MODE}_linear/{filename}.pkl"
+# __format__ = "runs/{MODE}_larger_linear/{filename}.pkl"
+
+[out.filename]
+__call__ = ["niarb.io", "iterdir"]
+path = "fits"
+pattern = "*.pt"
+stem = true
+indices = { __call__ = ["builtins", "int", { __environ__ = "SLURM_ARRAY_TASK_ID" }] }
+
