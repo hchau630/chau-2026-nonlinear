@@ -1,0 +1,55 @@
+tag_names = ["kind", "path", "loss"]
+
+[dataframes.__matrix__]
+kind = ["fitted model", "data"]
+path = { __call__ = ["niarb.io", "iterdir"], path = "fits", pattern = "*.pt", indices = { __indices__ = "0-4" } }
+
+[[dataframes.__include__]]
+loss = { __eval__ = "float(path.stem)" }
+
+[[dataframes.__include__]]
+kind = "fitted model"
+func = ["niarb.cli.run", "run"]
+dataset = { __ref__ = ["fit.toml", "dataset"] }
+pipeline = { __ref__ = ["fit.toml", "pipeline"] }
+state_dict = { __call__ = ["torch", "load"], f = { __eval__ = "path" } }
+cuts = { distance = { __array__ = "10:451:10.0" } }
+
+[[dataframes.__include__]]
+kind = "data"
+func = ["niarb.io", "load_data"]
+paths = "data/data.pkl"
+
+[plots.__matrix__]
+name = ["mean_response", "responses"]
+
+[[plots.__include__]]
+func = "relplot"
+kind = "line"
+x = "distance"
+y = "dr"
+hue = "perturbed_cell_type"
+hue_order = ["PYR", "PV"]
+style = "kind"
+grid = "yzero"
+height = 2.5
+
+[plots.__include__.mapping]
+cell_type = "Cell type"
+perturbed_cell_type = "Perturbed cell type"
+dr = "Pertubation response (a.u.)"
+distance = 'Distance ($\mu$m)'
+
+[[plots.__include__]]
+name = "mean_response"
+col = "cell_type"
+col_order = ["PYR", "PV"]
+errordim = "loss"
+errorbar = "sd"
+
+[[plots.__include__]]
+name = "responses"
+row = "cell_type"
+row_order = ["PYR", "PV"]
+col = "loss"
+errorbar = "se"

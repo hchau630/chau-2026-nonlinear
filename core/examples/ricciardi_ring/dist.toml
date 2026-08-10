@@ -1,0 +1,59 @@
+tag_names = ["kind", "path"]
+
+[[dataframes.__matrix__]]
+kind = ["fitted model"]
+path = { __call__ = ["niarb.io", "iterdir"], path = "fits", pattern = "*.pt", indices = { __indices__ = "0-4" } }
+
+[[dataframes.__matrix__]]
+kind = ["ground truth"]
+path = ["data/state_dict.pt"]
+
+[[dataframes.__include__]]
+func = ["niarb.dataframe", "from_state_dict"]
+dims = { gW = ["Postsynaptic", "Presynaptic"], sigma = ["Postsynaptic", "Presynaptic"] }
+coords = { gW = [["PYR", "PV"], ["PYR", "PV"]], sigma = [[""], ["PYR", "PV"]] }
+state_dict = { __call__ = ["torch", "load"], f = { __eval__ = "path" } }
+
+[[plots.__matrix__]]
+name = ["gW_dist", "sigma_dist", "dh_dist", "vf_dist", "alpha_dist"]
+
+[[plots.__include__]]
+func = "displot"
+x = "value"
+height = 2
+element = "step"
+fill = false
+common_bins = false
+facet_kws = { sharex = false }
+
+[[plots.__include__]]
+name = "gW_dist"
+query = "variable == 'gW'"
+hue = "kind"
+row = "Postsynaptic"
+col = "Presynaptic"
+mapping = { value = "Connectivity strength" }
+
+[[plots.__include__]]
+name = "sigma_dist"
+query = "variable == 'sigma'"
+hue = "kind"
+col = "Presynaptic"
+mapping = { value = 'Connectivity width ($\mu$m)' }
+
+[[plots.__include__]]
+name = "dh_dist"
+query = "variable == 'dh'"
+mapping = { value = "Perturbation strength" }
+
+[[plots.__include__]]
+name = "vf_dist"
+query = "variable == 'vf'"
+hue = "kind"
+mapping = { value = "Baseline voltage (a.u.)" }
+
+[[plots.__include__]]
+name = "alpha_dist"
+query = "variable == 'alpha'"
+hue = "kind"
+mapping = { value = 'Ricciardi scaling factor' }
