@@ -29,7 +29,7 @@ def main():
     )
     parser.add_argument("--estimator", type=str, default="median")
     parser.add_argument("--kind", type=str, choices=["var", "std"], default="var")
-    parser.add_argument("--log-x", action="store_true")
+    parser.add_argument("--logx", action="store_true")
     parser.add_argument("--ens-size", "-s", type=int, nargs=2, default=(9, 11))
     parser.add_argument("--min-N", type=int, default=2)
     parser.add_argument("--max-dist", type=float, default=75.0)
@@ -132,6 +132,8 @@ def main():
         "dr_SST_res": "SST response res.",
     }
     kwargs = {
+        "logx": args.logx,
+        "xscale": "log" if args.logx else "linear",
         "n_boot": args.n_resamples,
         "seed": 0,
         "statannot": True,
@@ -156,10 +158,6 @@ def main():
         "aspect": 1.1,
         "mapping": mapping,
     }
-
-    if args.log_x:
-        df[f"{kind}_PV"] = np.log(df[f"{kind}_PV"])
-        df[f"{kind}_SST"] = np.log(df[f"{kind}_SST"])
 
     for cell_type in ["PV", "SST"]:
         viz.figplot(
@@ -200,8 +198,12 @@ def main():
     for cell_type in ["PV", "SST"]:
         x, y, z = f"{kind}_{cell_type}", "dr_PYR", f"dr_{cell_type}"
         sf = df.query(f"~{x}.isna() and ~{y}.isna() and ~{z}.isna()").copy()
+        if args.logx:
+            sf[x] = np.log(sf[x])
         sf[f"{x}_res"] = residual(sf[z], sf[x])
         sf[f"{y}_res"] = residual(sf[z], sf[y])
+        if args.logx:
+            sf[f"{x}_res"] = np.exp(sf[f"{x}_res"])
         viz.figplot(
             sf,
             func="lmplot",
@@ -218,6 +220,10 @@ def main():
             plt.show()
         else:
             plt.close()
+
+    if args.logx:
+        # mean-mean plots make no sense with log x-axis
+        return
 
     for cell_type in ["PV", "SST"]:
         viz.figplot(
