@@ -1,0 +1,23 @@
+tag_names = ["path", "loss"]
+
+[dataframes.__matrix__]
+path = { __call__ = ["niarb.io", "iterdir"], path = "fits", pattern = "*.pt", indices = { __indices__ = "0-4" } }
+
+[[dataframes.__include__]]
+loss = { __eval__ = "float(path.stem)" }
+
+[[dataframes.__include__]]
+func = ["niarb.cli.run", "run"]
+dataset = { __ref__ = ["fit.toml", "dataset"], model_kwargs = { output = "weight" } }
+pipeline.model = { __ref__ = ["fit.toml", "pipeline", "model"], N_synapses = 100, seed = 0 }
+pipeline.analysis = { __call__ = ["niarb.nn", "Eigvals"] }
+state_dict = { __eval__ = "path" }
+
+[[plots]]
+name = "eigvals"
+func = "relplot"
+x = "real"
+y = "imag"
+col = "loss"
+col_wrap = 5
+height = 2.5

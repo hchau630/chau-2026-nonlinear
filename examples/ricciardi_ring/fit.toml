@@ -1,0 +1,47 @@
+dtype = "double"
+
+# for reproducibility, set random seeds
+seed = 0
+dataset.seed = 0
+
+[data]
+__call__ = ["niarb.io", "load_data"]
+paths = ["data/data.pkl"]
+
+[dataset.neurons]
+__call__ = ["niarb.neurons", "as_grid"]
+n = 2
+N_space = [100]
+cell_types = ["PYR", "PV"]
+space_extent = [1000.0]
+
+[dataset.perturbations.configs.__matrix__]
+N = [1]
+perturbed_cell_type = ["PYR", "PV"]
+
+[dataset.perturbations.mapping]
+PYR = { cell_probs = { PYR = 1.0 } }
+PV = { cell_probs = { PV = 1.0 } }
+
+[dataset.metrics]
+distance = "min_distance_to_ensemble"
+
+[pipeline.model]
+__call__ = ["niarb.nn", "V1"]
+variables = ["cell_type", "space"]
+f = "Ricciardi"
+sigma_symmetry = "pre"
+cell_types = ["PYR", "PV"]
+init_stable = true
+nonlinear_kwargs = { assert_convergence = false, max_num_steps = 10 }
+
+[pipeline.scaler]
+requires_optim = true
+
+[validation_pipeline.model]
+__call__ = ["niarb.nn", "V1"]
+variables = ["cell_type", "space"]
+f = "Ricciardi"
+sigma_symmetry = "pre"
+cell_types = ["PYR", "PV"]
+mode = "numerical"

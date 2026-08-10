@@ -1,0 +1,60 @@
+[build-system]
+# editable install using setuptool available since v64.0.0
+requires = ["setuptools>=64.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "niarb"
+version = "0.1.0"
+description = "Code for fitting firing rate models of mouse V1 used in my projects."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Ho Yin Chau" }]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "numpy",
+    "scipy >= 1.14.0", # need axis argumnet in scipy.stats.pearsonr
+    "pandas[feather]",
+    "seaborn",
+    "statsmodels > 0.14.5", # 0.14.4 or earlier breaks with scipy >= 1.16.0
+    "matplotlib",
+    "torch >= 2.2.0", # bucketize implemented for mps since 2.2.0
+    "torchdiffeq",
+    "hyclib >= 0.1.40",
+    "tdfl >= 0.1.15",
+    "tqdm",
+    "ricciardi >= 0.1.6",
+    "torch-bessel >= 0.0.10",
+    "xitorch",                # for solving steady-state equations with established numerical methods
+]
+
+[project.urls]
+repository = "https://github.com/hchau630/niarb"
+
+[project.scripts]
+niarb = "niarb.main:main"
+
+[tool.ruff.lint]
+extend-select = ["E", "W", "F"] # ensure all flake8 rules are covered
+ignore = [
+    "E731",   # lambda expressions
+    "E741",   # ambiguous variable names
+    "E712",   # comparison to True/False, has issue documented in GitHub issue #4560
+    "PYI041", # collapsing numeric type hints
+    "BLE001", # catching blind exceptions
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = [
+    "F401", # unused imports
+    "F403", # wildcard imports
+]
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 127 # GitHub editor is 127 chars wide

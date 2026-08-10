@@ -1,0 +1,35 @@
+tag_names = ["path", "loss"]
+
+[dataframes.__matrix__]
+path = { __call__ = ["niarb.io", "iterdir"], path = "fits", pattern = "*.pt", indices = { __indices__ = "0-4" } }
+
+[[dataframes.__include__]]
+loss = { __eval__ = "float(path.stem)" }
+func = ["niarb.dataframe", "from_state_dict"]
+dims = { gW = ["Postsynaptic", "Presynaptic"], sigma = ["Postsynaptic", "Presynaptic"] }
+coords = { gW = [["PYR", "PV"], ["PYR", "PV"]], sigma = [[""], ["PYR", "PV"]] }
+state_dict = { __call__ = ["torch", "load"], f = { __eval__ = "path" } }
+
+[plots.__matrix__]
+name = ["gW_param", "sigma_param"]
+
+[[plots.__include__]]
+func = "catplot"
+kind = "bar"
+y = "value"
+height = 2
+
+[[plots.__include__]]
+name = "gW_param"
+query = "variable == 'gW'"
+x = "Presynaptic"
+hue = "Postsynaptic"
+col = "loss"
+mapping = { value = "Connectivity strength" }
+
+[[plots.__include__]]
+name = "sigma_param"
+query = "variable == 'sigma'"
+x = "Presynaptic"
+col = "loss"
+mapping = { value = 'Connectivity width ($\mu$m)' }

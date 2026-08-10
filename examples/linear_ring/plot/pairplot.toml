@@ -1,0 +1,48 @@
+tag_names = ["path"]
+
+[dataframes.__matrix__]
+path = { __call__ = ["niarb.io", "iterdir"], path = "fits", pattern = "*.pt", indices = { __indices__ = "0-4" } }
+
+[[dataframes.__include__]]
+func = ["niarb.dataframe", "pivot"]
+columns = ["variable", "Postsynaptic", "Presynaptic"]
+values = "value"
+template = '{variable}[{Postsynaptic},{Presynaptic}]'
+
+[dataframes.__include__.aux_columns]
+# note that gW is an unsigned matrix here
+'$\mathrm{det}(\mathbf{W})$' = '`gW[PYR,PV]` * `gW[PV,PYR]` - `gW[PYR,PYR]` * `gW[PV,PV]`'
+'$\mathrm{tr}(\mathbf{W})$' = '`gW[PYR,PYR]` - `gW[PV,PV]`'
+'$w_\mathrm{EE}$' = '`gW[PYR,PYR]`'
+'$|w_\mathrm{II}|$' = '`gW[PV,PV]`'
+
+[dataframes.__include__.df]
+__call__ = ["niarb.dataframe", "from_state_dict"]
+dims = { gW = ["Postsynaptic", "Presynaptic"], sigma = ["Postsynaptic", "Presynaptic"], kappa = ["Postsynaptic", "Presynaptic"] }
+coords = { gW = [["PYR", "PV"], ["PYR", "PV"]], sigma = [[""], ["PYR", "PV"]], kappa = [["PYR", "PV"], ["PYR", "PV"]] }
+state_dict = { __call__ = ["torch", "load"], f = { __eval__ = "path" }, map_location = "cpu" }
+
+[[plots]]
+name = "gW_pairplot"
+func = "pairplot"
+# kind = "reg"
+vars = ['$\mathrm{det}(\mathbf{W})$', '$\mathrm{tr}(\mathbf{W})$', '$w_\mathrm{EE}$', '$|w_\mathrm{II}|$']
+height = 2
+diag_kws = { element = "step", fill = false }
+
+[[plots]]
+name = "phase_diagram"
+func = "relplot"
+x = '$\mathrm{tr}(\mathbf{W})$'
+y = '$\mathrm{det}(\mathbf{W})$'
+height = 2
+aspect = 1.5
+
+[[plots]]
+name = "phase_diagram_reg"
+func = "lmplot"
+stat = true
+x = '$\mathrm{tr}(\mathbf{W})$'
+y = '$\mathrm{det}(\mathbf{W})$'
+height = 2
+aspect = 1.5

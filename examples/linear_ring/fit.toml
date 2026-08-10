@@ -1,0 +1,48 @@
+# for reproducibility, set random seeds
+seed = 0
+dataset.seed = 0
+
+[data]
+__call__ = ["niarb.io", "load_data"]
+paths = ["data/data.pkl"]
+
+[dataset.neurons]
+__call__ = ["niarb.neurons", "as_grid"]
+n = 2
+N_space = [100]
+cell_types = ["PYR", "PV"]
+space_extent = [1000.0]
+
+[dataset.perturbations.configs.__matrix__]
+N = [1]
+perturbed_cell_type = ["PYR", "PV"]
+
+[dataset.perturbations.mapping]
+PYR = { cell_probs = { PYR = 1.0 } }
+PV = { cell_probs = { PV = 1.0 } }
+
+[dataset.metrics]
+distance = "min_distance_to_ensemble"
+
+[pipeline.model]
+__call__ = ["niarb.nn", "V1"]
+variables = ["cell_type", "space"]
+cell_types = ["PYR", "PV"]
+sigma_symmetry = "pre"
+init_stable = true
+
+[validation_pipeline.model]
+__call__ = ["niarb.nn", "V1"]
+variables = ["cell_type", "space"]
+cell_types = ["PYR", "PV"]
+sigma_symmetry = "pre"
+init_stable = true
+mode = "numerical"
+simulation_kwargs = { options = { max_num_steps = 1000 } }
+
+[optimizer]
+options = { maxiter = 1000 }
+
+[[optimizer.constraints]]
+__call__ = ["niarb.optimize.constraint", "StabilityCon"]
+eps = 0.01
