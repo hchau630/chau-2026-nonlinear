@@ -1,4 +1,5 @@
 import argparse
+import logging
 import sys
 from itertools import product
 from pathlib import Path
@@ -35,9 +36,13 @@ def main():
     parser.add_argument("--query", "-q", type=str)
     parser.add_argument("--method", "-m", type=str, default="bootstrap")
     parser.add_argument("--n-resamples", "-n", type=int, default=99999)
+    parser.add_argument("--log-level", "-l", type=str, default="INFO")
     parser.add_argument("--out", "-o", type=Path)
     parser.add_argument("--show", action="store_true")
     args = parser.parse_args()
+
+    logging.basicConfig(level=args.log_level)
+    logger = logging.getLogger()
 
     if args.out:
         args.out.mkdir(exist_ok=True, parents=True)
@@ -132,6 +137,7 @@ def main():
     }
 
     for cell_type in ["PV", "SST"]:
+        logger.info(f"Plotting dr_PYR vs {kind}_{cell_type}...")
         viz.figplot(
             df.query(f"~{kind}_{cell_type}.isna() and ~dr_PYR.isna()").copy(),
             func="lmplot",
@@ -150,6 +156,7 @@ def main():
             plt.close()
 
     for cell_type in ["PV", "SST"]:
+        logger.info(f"Plotting dr_{cell_type} vs {kind}_{cell_type}...")
         viz.figplot(
             df.query(f"~{kind}_{cell_type}.isna() and ~dr_{cell_type}.isna()").copy(),
             func="lmplot",
@@ -172,6 +179,7 @@ def main():
         return
 
     for cell_type in ["PV", "SST"]:
+        logger.info(f"Plotting dr_PYR vs dr_{cell_type}...")
         viz.figplot(
             df.query(f"~dr_{cell_type}.isna() and ~dr_PYR.isna()").copy(),
             func="lmplot",
