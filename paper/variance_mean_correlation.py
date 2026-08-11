@@ -99,8 +99,8 @@ def main():
     mapping = {
         "std_PV": "PV response s.d.",
         "std_SST": "SST response s.d.",
-        "var_PV": r"PV variance",
-        "var_SST": r"SST variance",
+        "var_PV": "PV variance",
+        "var_SST": "SST variance",
         "dr_PYR": "Pyr response",
         "dr_PV": "PV response",
         "dr_SST": "SST response",

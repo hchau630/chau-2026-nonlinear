@@ -220,12 +220,14 @@ def figplot(
             g.map_dataframe(layer_func, **layer)
 
         if statannot:
+            keys = ["x", "y", "hue", "order", "hue_order"]
+            if func == lmplot:
+                keys.append("logx")
+
             func = lmstatplot if func == lmplot else statplot
-            statannot_kws = {
-                k: kwargs[k]
-                for k in ("x", "y", "hue", "order", "hue_order")
-                if k in kwargs
-            } | (statannot_kws or {})
+            statannot_kws = {k: kwargs[k] for k in keys if k in kwargs} | (
+                statannot_kws or {}
+            )
             statannot_kws = {
                 k: mapping[v] if (k in {"x", "y", "hue"}) and (v in mapping) else v
                 for k, v in statannot_kws.items()
@@ -455,6 +457,7 @@ def lmstatplot(
     *,
     x=None,
     y=None,
+    logx=False,
     loc="upper right",
     alpha=0.5,
     verbosity=1,
@@ -466,6 +469,10 @@ def lmstatplot(
     rng=None,
     **kwargs,
 ):
+    if logx:
+        data = data.copy()
+        data[x] = np.log10(data[x])
+
     fit = sm.OLS(data[y], sm.add_constant(data[x])).fit()
     pvalue = fit.pvalues.loc[x]
 
