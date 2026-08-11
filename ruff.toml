@@ -1,0 +1,14 @@
+src = ["core/src"]
+
+[lint]
+extend-select = ["E", "W", "F"] # ensure all flake8 rules are covered
+ignore = [
+    "E731",   # lambda expressions
+    "E741",   # ambiguous variable names
+    "E712",   # comparison to True/False, has issue documented in GitHub issue #4560
+    "PYI041", # collapsing numeric type hints
+    "BLE001", # catching blind exceptions
+]
+
+[lint.pycodestyle]
+max-line-length = 127 # GitHub editor is 127 chars wide

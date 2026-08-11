@@ -1,13 +1,12 @@
 import argparse
-from pathlib import Path
 import sys
 from itertools import product
+from pathlib import Path
 
-import pandas as pd
 import matplotlib.pyplot as plt
-from scipy import stats
 import numpy as np
-# import seaborn as sns
+import pandas as pd
+from scipy import stats
 
 from niarb import viz
 
@@ -100,14 +99,10 @@ def main():
         "dr_PYR": "Pyr response",
         "dr_PV": "PV response",
         "dr_SST": "SST response",
-        "std_PV_res": "PV response s.d. res.",
-        "std_SST_res": "SST response s.d. res.",
-        "var_PV_res": r"PV variance res.",
-        "var_SST_res": r"SST variance res.",
-        "dr_PYR_res": "Pyr response res.",
-        "dr_PV_res": "PV response res.",
-        "dr_SST_res": "SST response res.",
     }
+    if args.partial_ens_size:
+        mapping = {k: f"{v} res." for k, v in mapping.items()}
+
     kwargs = {
         "logx": args.logx,
         "xscale": "log" if args.logx else "linear",
