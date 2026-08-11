@@ -10,7 +10,6 @@ import numpy as np
 # import seaborn as sns
 
 from niarb import viz
-# import regression
 
 
 def residual(x, y, keep_mean=True):
@@ -50,29 +49,6 @@ def main():
     if args.query:
         df = df.query(args.query).copy()
 
-    # df = df.query(f"_distance < {args.max_dist}").copy()
-    # df = df.groupby(
-    #     ["mouse_id", "session_id", "holo_id", "cell_type", "_holo_osi", "_N"],
-    #     as_index=False,
-    #     observed=True,
-    # )["dr"].agg(**{"dr": args.estimator, kind: kind, "count": "count"})
-
-    # x, y = [], []
-    # for _, sf in df.query(
-    #     f"_N >= {args.ens_size[0]} and _N <= {args.ens_size[1]}"
-    # ).groupby("holo_id", observed=True):
-    #     # xi = sf.query("cell_type == 'SST'")["dr"]
-    #     xi = sf.query(f"cell_type == 'SST' and _distance < {args.max_dist}")["dr"]
-    #     yi = sf.query(f"cell_type == 'PYR' and _distance < {args.max_dist}")["dr"]
-    #     if len(xi) < args.min_N or len(yi) < args.min_N:
-    #         continue
-    #     x.append(xi.to_numpy())
-    #     y.append(yi.to_numpy())
-    # res = regression.analyze(x, y)
-    # print(res.summary())
-    # res.plot()
-    # plt.show()
-
     df["is_nearby_dr"] = df["dr"]
     df.loc[df["_distance"] >= args.max_dist, "is_nearby_dr"] = pd.NA
     df = df.groupby(
@@ -110,10 +86,11 @@ def main():
     if args.partial_ens_size:
         for cell_type, statistic in product(["PYR", "PV", "SST"], ["dr", kind]):
             col = f"{statistic}_{cell_type}"
+            if statistic == kind and args.logx:
+                df[col] = np.log10(df[col])
             df[col] = residual(df["_N"], df[col])
-
-    # print(df.query("var_SST > 10"))
-    # print(df.query("~var_SST.isna()").groupby("mouse_id").size())
+            if statistic == kind and args.logx:
+                df[col] = 10 ** df[col]
 
     mapping = {
         "std_PV": "PV response s.d.",
@@ -195,32 +172,6 @@ def main():
         else:
             plt.close()
 
-    for cell_type in ["PV", "SST"]:
-        x, y, z = f"{kind}_{cell_type}", "dr_PYR", f"dr_{cell_type}"
-        sf = df.query(f"~{x}.isna() and ~{y}.isna() and ~{z}.isna()").copy()
-        if args.logx:
-            sf[x] = np.log(sf[x])
-        sf[f"{x}_res"] = residual(sf[z], sf[x])
-        sf[f"{y}_res"] = residual(sf[z], sf[y])
-        if args.logx:
-            sf[f"{x}_res"] = np.exp(sf[f"{x}_res"])
-        viz.figplot(
-            sf,
-            func="lmplot",
-            x=f"{x}_res",
-            y=f"{y}_res",
-            **kwargs,
-        )
-        if args.out:
-            plt.savefig(
-                args.out / f"{cell_type}_partial.pdf",
-                metadata={"Subject": " ".join(["python"] + sys.argv)},
-            )
-        if args.show:
-            plt.show()
-        else:
-            plt.close()
-
     if args.logx:
         # mean-mean plots make no sense with log x-axis
         return
@@ -236,28 +187,6 @@ def main():
         if args.out:
             plt.savefig(
                 args.out / f"{cell_type}_mean.pdf",
-                metadata={"Subject": " ".join(["python"] + sys.argv)},
-            )
-        if args.show:
-            plt.show()
-        else:
-            plt.close()
-
-    for cell_type in ["PV", "SST"]:
-        x, y, z = f"dr_{cell_type}", "dr_PYR", f"{kind}_{cell_type}"
-        sf = df.query(f"~{x}.isna() and ~{y}.isna() and ~{z}.isna()").copy()
-        sf[f"{x}_res"] = residual(sf[z], sf[x])
-        sf[f"{y}_res"] = residual(sf[z], sf[y])
-        viz.figplot(
-            sf,
-            func="lmplot",
-            x=f"{x}_res",
-            y=f"{y}_res",
-            **kwargs,
-        )
-        if args.out:
-            plt.savefig(
-                args.out / f"{cell_type}_mean_partial.pdf",
                 metadata={"Subject": " ".join(["python"] + sys.argv)},
             )
         if args.show:
