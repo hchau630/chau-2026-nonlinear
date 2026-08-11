@@ -466,6 +466,7 @@ def lmstatplot(
     marker=None,
     method=None,
     n_resamples=9999,
+    format_spec=".2g",
     rng=None,
     **kwargs,
 ):
@@ -496,13 +497,19 @@ def lmstatplot(
         )
 
     text = [
-        rf"Slope: {fit.params.loc[x]:.2g}$\pm${fit.bse.loc[x]:.2g}",
-        rf"Intercept: {fit.params.loc['const']:.2g}$\pm${fit.bse.loc['const']:.2g}",
-        f"$R^2$: {fit.rsquared:.2g}, P-value: {pvalue:.2g}",
+        rf"Slope: {fit.params.loc[x]:{format_spec}}$\pm${fit.bse.loc[x]:{format_spec}}",
+        (
+            rf"Intercept: {fit.params.loc['const']:{format_spec}}$"
+            rf"\pm${fit.bse.loc['const']:{format_spec}}"
+        ),
+        f"$R^2$: {fit.rsquared:{format_spec}}, P-value: {pvalue:{format_spec}}",
     ]
 
     if verbosity == 0:
-        text = text[:-1] + [f"$R^2$: {fit.rsquared:.2g}", f"p = {pvalue:.2g}"]
+        text = text[:-1] + [
+            f"$R^2$: {fit.rsquared:{format_spec}}",
+            f"p = {pvalue:{format_spec}}",
+        ]
 
     if verbosity <= 0:
         spec = plt.gca().get_subplotspec()
