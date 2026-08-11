@@ -24,7 +24,7 @@ col = "loss"
 col_wrap = 5
 n_boot = 9999
 statannot = true
-statannot_kws = { method = "bootstrap", n_resamples = 9999, verbosity = -1, frameon = false }
+statannot_kws = { method = "permutation", n_resamples = 999999, verbosity = -1, frameon = false }
 line_kws = { color = "black" }
 scatter_kws = { s = 4, edgecolor = "none", facecolor = "black" }
 facet_kws = { sharex = false, sharey = false }

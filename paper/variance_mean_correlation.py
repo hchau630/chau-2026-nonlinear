@@ -34,8 +34,9 @@ def main():
     parser.add_argument("--max-dist", type=float, default=75.0)
     parser.add_argument("--partial-ens-size", "-p", action="store_true")
     parser.add_argument("--query", "-q", type=str)
-    parser.add_argument("--method", "-m", type=str, default="bootstrap")
-    parser.add_argument("--n-resamples", "-n", type=int, default=99999)
+    parser.add_argument("--method", "-m", type=str, default="permutation")
+    parser.add_argument("--n-boot", "-b", type=int, default=9_999)
+    parser.add_argument("--n-resamples", "-n", type=int, default=999_999)
     parser.add_argument("--log-level", "-l", type=str, default="INFO")
     parser.add_argument("--out", "-o", type=Path)
     parser.add_argument("--show", action="store_true")
@@ -111,13 +112,14 @@ def main():
     kwargs = {
         "logx": args.logx,
         "xscale": "log" if args.logx else "linear",
-        "n_boot": args.n_resamples,
+        "n_boot": args.n_boot,
         "seed": 0,
         "statannot": True,
         "statannot_kws": {
             "method": args.method,
             "n_resamples": args.n_resamples,
             "rng": 0,
+            "format_spec": ".4g",
             "verbosity": -1,
             "frameon": False,
         },
