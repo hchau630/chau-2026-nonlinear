@@ -22,19 +22,11 @@ logger = logging.getLogger(__name__)
 _load_mappings = {
     ".pkl": pd.read_pickle,
     ".json": pd.read_json,
-    ".h5": pd.read_hdf,
-    ".hdf5": pd.read_hdf,
-    ".feather": pd.read_feather,
-    ".parquet": pd.read_parquet,
 }
 
 _save_mappings = {
     ".pkl": "to_pickle",
     ".json": "to_json",
-    ".h5": "to_hdf",
-    ".hdf5": "to_hdf",
-    ".feather": "to_feather",
-    ".parquet": "to_parquet",
 }
 
 
