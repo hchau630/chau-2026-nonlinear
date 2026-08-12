@@ -1,0 +1,57 @@
+[project]
+name = "chau-2026-nonlinear"
+version = "0.1.0"
+description = "Code for 'A nonlinear inhibition pathway underlying cortical responses to tuned holographic optogenetic perturbations'"
+readme = "README.md"
+requires-python = "==3.11.*"
+license = { file = "LICENSE" }
+authors = [{ name = "Ho Yin Chau" }]
+dependencies = [
+    # "niarb",
+    "xarray",
+    "scikit-image",
+    "hsluv",
+]
+
+[project.optional-dependencies]
+cpu = ["niarb[pt26cpu]"]
+cu124 = ["niarb[pt26cu124]"]
+cu128 = ["niarb[pt27cu128]"]
+
+[project.urls]
+repository = "https://github.com/hchau630/chau-2026-nonlinear"
+
+[tool.uv]
+package = false
+conflicts = [
+    [
+        { extra = "cpu" },
+        { extra = "cu124" },
+        { extra = "cu128" },
+    ],
+    [
+        { package = "niarb", extra = "pt26cpu" },
+        { package = "niarb", extra = "pt26cu124" },
+        { package = "niarb", extra = "pt27cu128" },
+    ],
+]
+
+[tool.uv.sources]
+torchdiffeq = { git = "https://github.com/rtqichen/torchdiffeq", rev = "657943acefa826ef04c025ebeb1ff5e9d60dc268" }
+niarb = { path = "core", editable = true }
+
+[tool.ruff]
+src = ["core/src"]
+
+[tool.ruff.lint]
+extend-select = ["E", "W", "F"] # ensure all flake8 rules are covered
+ignore = [
+    "E731",   # lambda expressions
+    "E741",   # ambiguous variable names
+    "E712",   # comparison to True/False, has issue documented in GitHub issue #4560
+    "PYI041", # collapsing numeric type hints
+    "BLE001", # catching blind exceptions
+]
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 127 # GitHub editor is 127 chars wide
