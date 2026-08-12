@@ -7,16 +7,15 @@ requires-python = "==3.11.*"
 license = { file = "LICENSE" }
 authors = [{ name = "Ho Yin Chau" }]
 dependencies = [
-    # "niarb",
     "xarray",
     "scikit-image",
     "hsluv",
 ]
 
 [project.optional-dependencies]
-cpu = ["niarb[pt26cpu]"]
-cu124 = ["niarb[pt26cu124]"]
-cu128 = ["niarb[pt27cu128]"]
+cpu = ["niarb[pt26cpu]", "torchdiffeq"]
+cu124 = ["niarb[pt26cu124]", "torchdiffeq"]
+cu128 = ["niarb[pt27cu128]", "torchdiffeq"]
 
 [project.urls]
 repository = "https://github.com/hchau630/chau-2026-nonlinear"
