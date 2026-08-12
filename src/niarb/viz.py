@@ -220,12 +220,14 @@ def figplot(
             g.map_dataframe(layer_func, **layer)
 
         if statannot:
+            keys = ["x", "y", "hue", "order", "hue_order"]
+            if func == lmplot:
+                keys.append("logx")
+
             func = lmstatplot if func == lmplot else statplot
-            statannot_kws = {
-                k: kwargs[k]
-                for k in ("x", "y", "hue", "order", "hue_order")
-                if k in kwargs
-            } | (statannot_kws or {})
+            statannot_kws = {k: kwargs[k] for k in keys if k in kwargs} | (
+                statannot_kws or {}
+            )
             statannot_kws = {
                 k: mapping[v] if (k in {"x", "y", "hue"}) and (v in mapping) else v
                 for k, v in statannot_kws.items()
@@ -455,6 +457,7 @@ def lmstatplot(
     *,
     x=None,
     y=None,
+    logx=False,
     loc="upper right",
     alpha=0.5,
     verbosity=1,
@@ -463,9 +466,14 @@ def lmstatplot(
     marker=None,
     method=None,
     n_resamples=9999,
+    format_spec=".2g",
     rng=None,
     **kwargs,
 ):
+    if logx:
+        data = data.copy()
+        data[x] = np.log10(data[x])
+
     fit = sm.OLS(data[y], sm.add_constant(data[x])).fit()
     pvalue = fit.pvalues.loc[x]
 
@@ -489,13 +497,19 @@ def lmstatplot(
         )
 
     text = [
-        rf"Slope: {fit.params.loc[x]:.2g}$\pm${fit.bse.loc[x]:.2g}",
-        rf"Intercept: {fit.params.loc['const']:.2g}$\pm${fit.bse.loc['const']:.2g}",
-        f"$R^2$: {fit.rsquared:.2g}, P-value: {pvalue:.2g}",
+        rf"Slope: {fit.params.loc[x]:{format_spec}}$\pm${fit.bse.loc[x]:{format_spec}}",
+        (
+            rf"Intercept: {fit.params.loc['const']:{format_spec}}$"
+            rf"\pm${fit.bse.loc['const']:{format_spec}}"
+        ),
+        f"$R^2$: {fit.rsquared:{format_spec}}, P-value: {pvalue:{format_spec}}",
     ]
 
     if verbosity == 0:
-        text = text[:-1] + [f"$R^2$: {fit.rsquared:.2g}", f"p = {pvalue:.2g}"]
+        text = text[:-1] + [
+            f"$R^2$: {fit.rsquared:{format_spec}}",
+            f"p = {pvalue:{format_spec}}",
+        ]
 
     if verbosity <= 0:
         spec = plt.gca().get_subplotspec()

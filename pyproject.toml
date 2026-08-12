@@ -1,5 +1,5 @@
 [build-system]
-# editable install using setuptool available since v64.0.0
+# Editable installs with setuptools are supported starting with v64.0.0.
 requires = ["setuptools>=64.0"]
 build-backend = "setuptools.build_meta"
 
@@ -19,19 +19,60 @@ classifiers = [
 ]
 dependencies = [
     "numpy",
-    "scipy >= 1.14.0", # need axis argumnet in scipy.stats.pearsonr
+    "scipy >= 1.14.0",        # Need the axis argument in scipy.stats.pearsonr.
     "pandas[feather]",
     "seaborn",
-    "statsmodels > 0.14.5", # 0.14.4 or earlier breaks with scipy >= 1.16.0
+    "statsmodels > 0.14.5",   # 0.14.4 or earlier breaks with scipy >= 1.16.0.
     "matplotlib",
-    "torch >= 2.2.0", # bucketize implemented for mps since 2.2.0
+    "torch >= 2.2.0",         # torch.bucketize is implemented for MPS starting in 2.2.0.
     "torchdiffeq",
     "hyclib >= 0.1.40",
     "tdfl >= 0.1.15",
     "tqdm",
     "ricciardi >= 0.1.6",
     "torch-bessel >= 0.0.10",
-    "xitorch",                # for solving steady-state equations with established numerical methods
+    "xitorch",                # Solves steady-state equations with established numerical methods.
+]
+
+# Select PyTorch build
+[project.optional-dependencies]
+pt26cpu = ["torch == 2.6.0", "torch-bessel"]
+pt26cu124 = ["torch == 2.6.0", "torch-bessel"]
+pt26cu126 = ["torch == 2.6.0", "torch-bessel"]
+pt27cpu = ["torch == 2.7.1", "torch-bessel"]
+pt27cu126 = ["torch == 2.7.1", "torch-bessel"]
+pt27cu128 = ["torch == 2.7.1", "torch-bessel"]
+pt28cpu = ["torch == 2.8.0", "torch-bessel"]
+pt28cu126 = ["torch == 2.8.0", "torch-bessel"]
+pt28cu128 = ["torch == 2.8.0", "torch-bessel"]
+pt29cpu = ["torch == 2.9.1", "torch-bessel"]
+pt29cu126 = ["torch == 2.9.1", "torch-bessel"]
+pt29cu128 = ["torch == 2.9.1", "torch-bessel"]
+pt210cpu = ["torch == 2.10.0", "torch-bessel"]
+pt210cu126 = ["torch == 2.10.0", "torch-bessel"]
+pt210cu128 = ["torch == 2.10.0", "torch-bessel"]
+pt211cpu = ["torch == 2.11.0", "torch-bessel"]
+pt211cu126 = ["torch == 2.11.0", "torch-bessel"]
+pt211cu128 = ["torch == 2.11.0", "torch-bessel"]
+pt212cpu = ["torch == 2.12.1", "torch-bessel"]
+pt212cu126 = ["torch == 2.12.1", "torch-bessel"]
+pt212cu130 = ["torch == 2.12.1", "torch-bessel"]
+
+[dependency-groups]
+dev = [
+    { include-group = "lint" },
+    { include-group = "test" },
+]
+benchmark = [
+    "asv",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+    "packaging",
+]
+lint = [
+    "ruff",
 ]
 
 [project.urls]
@@ -40,21 +81,248 @@ repository = "https://github.com/hchau630/niarb"
 [project.scripts]
 niarb = "niarb.main:main"
 
+[tool.uv]
+required-version = ">=0.6.11"
+conflicts = [
+    [
+        { extra = "pt26cpu" },
+        { extra = "pt26cu124" },
+        { extra = "pt26cu126" },
+        { extra = "pt27cpu" },
+        { extra = "pt27cu126" },
+        { extra = "pt27cu128" },
+        { extra = "pt28cpu" },
+        { extra = "pt28cu126" },
+        { extra = "pt28cu128" },
+        { extra = "pt29cpu" },
+        { extra = "pt29cu126" },
+        { extra = "pt29cu128" },
+        { extra = "pt210cpu" },
+        { extra = "pt210cu126" },
+        { extra = "pt210cu128" },
+        { extra = "pt211cpu" },
+        { extra = "pt211cu126" },
+        { extra = "pt211cu128" },
+        { extra = "pt212cpu" },
+        { extra = "pt212cu126" },
+        { extra = "pt212cu130" },
+    ],
+]
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu", extra = "pt26cpu" },
+    { index = "pytorch-cu124", extra = "pt26cu124" },
+    { index = "pytorch-cu126", extra = "pt26cu126" },
+    { index = "pytorch-cpu", extra = "pt27cpu" },
+    { index = "pytorch-cu126", extra = "pt27cu126" },
+    { index = "pytorch-cu128", extra = "pt27cu128" },
+    { index = "pytorch-cpu", extra = "pt28cpu" },
+    { index = "pytorch-cu126", extra = "pt28cu126" },
+    { index = "pytorch-cu128", extra = "pt28cu128" },
+    { index = "pytorch-cpu", extra = "pt29cpu" },
+    { index = "pytorch-cu126", extra = "pt29cu126" },
+    { index = "pytorch-cu128", extra = "pt29cu128" },
+    { index = "pytorch-cpu", extra = "pt210cpu" },
+    { index = "pytorch-cu126", extra = "pt210cu126" },
+    { index = "pytorch-cu128", extra = "pt210cu128" },
+    { index = "pytorch-cpu", extra = "pt211cpu" },
+    { index = "pytorch-cu126", extra = "pt211cu126" },
+    { index = "pytorch-cu128", extra = "pt211cu128" },
+    { index = "pytorch-cpu", extra = "pt212cpu" },
+    { index = "pytorch-cu126", extra = "pt212cu126" },
+    { index = "pytorch-cu130", extra = "pt212cu130" },
+]
+torch-bessel = [
+    { index = "torch-bessel-26-cpu", extra = "pt26cpu" },
+    { index = "torch-bessel-26-cu124", extra = "pt26cu124" },
+    { index = "torch-bessel-26-cu126", extra = "pt26cu126" },
+    { index = "torch-bessel-27-cpu", extra = "pt27cpu" },
+    { index = "torch-bessel-27-cu126", extra = "pt27cu126" },
+    { index = "torch-bessel-27-cu128", extra = "pt27cu128" },
+    { index = "torch-bessel-28-cpu", extra = "pt28cpu" },
+    { index = "torch-bessel-28-cu126", extra = "pt28cu126" },
+    { index = "torch-bessel-28-cu128", extra = "pt28cu128" },
+    { index = "torch-bessel-29-cpu", extra = "pt29cpu" },
+    { index = "torch-bessel-29-cu126", extra = "pt29cu126" },
+    { index = "torch-bessel-29-cu128", extra = "pt29cu128" },
+    { index = "torch-bessel-210-cpu", extra = "pt210cpu" },
+    { index = "torch-bessel-210-cu126", extra = "pt210cu126" },
+    { index = "torch-bessel-210-cu128", extra = "pt210cu128" },
+    { index = "torch-bessel-211-cpu", extra = "pt211cpu" },
+    { index = "torch-bessel-211-cu126", extra = "pt211cu126" },
+    { index = "torch-bessel-211-cu128", extra = "pt211cu128" },
+    { index = "torch-bessel-212-cpu", extra = "pt212cpu" },
+    { index = "torch-bessel-212-cu126", extra = "pt212cu126" },
+    { index = "torch-bessel-212-cu130", extra = "pt212cu130" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-26-cpu"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.6.0%2Bcpu.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-26-cu124"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.6.0%2Bcu124.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-26-cu126"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.6.0%2Bcu126.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-27-cpu"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.7.1%2Bcpu.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-27-cu126"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.7.1%2Bcu126.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-27-cu128"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.7.1%2Bcu128.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-28-cpu"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.8.0%2Bcpu.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-28-cu126"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.8.0%2Bcu126.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-28-cu128"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.8.0%2Bcu128.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-29-cpu"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.9.1%2Bcpu.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-29-cu126"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.9.1%2Bcu126.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-29-cu128"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.9.1%2Bcu128.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-210-cpu"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.10.0%2Bcpu.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-210-cu126"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.10.0%2Bcu126.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-210-cu128"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.10.0%2Bcu128.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-211-cpu"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.11.0%2Bcpu.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-211-cu126"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.11.0%2Bcu126.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-211-cu128"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.11.0%2Bcu128.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-212-cpu"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.12.1%2Bcpu.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-212-cu126"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.12.1%2Bcu126.html"
+format = "flat"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-bessel-212-cu130"
+url = "https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-2.12.1%2Bcu130.html"
+format = "flat"
+explicit = true
+
 [tool.ruff.lint]
-extend-select = ["E", "W", "F"] # ensure all flake8 rules are covered
+extend-select = ["E", "W", "F"] # Ensure all flake8 rules are covered.
 ignore = [
-    "E731",   # lambda expressions
-    "E741",   # ambiguous variable names
-    "E712",   # comparison to True/False, has issue documented in GitHub issue #4560
-    "PYI041", # collapsing numeric type hints
-    "BLE001", # catching blind exceptions
+    "E731",   # Lambda expressions.
+    "E741",   # Ambiguous variable names.
+    "E712",   # Comparison to True/False; see Ruff issue #4560.
+    "PYI041", # Collapsing numeric type hints.
+    "BLE001", # Catching blind exceptions.
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = [
-    "F401", # unused imports
-    "F403", # wildcard imports
+    "F401", # Unused imports.
+    "F403", # Wildcard imports.
 ]
 
 [tool.ruff.lint.pycodestyle]
-max-line-length = 127 # GitHub editor is 127 chars wide
+max-line-length = 127 # GitHub's editor is 127 characters wide.
