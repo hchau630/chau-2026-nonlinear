@@ -38,6 +38,7 @@ constraint-dependencies = [
     "scipy < 1.17",
     "numpy < 2.3",
     "pandas < 2.3.3",
+    "pillow < 12.0",
     "contourpy < 1.3.3",
 ]
 

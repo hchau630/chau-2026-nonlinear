@@ -1,6 +1,9 @@
 # About
 Code for "A nonlinear inhibition pathway underlying cortical responses to tuned holographic optogenetic perturbations"
 
+> [!NOTE]
+> Windows is currently not supported. Please open an issue if you would like to run this code on Windows.
+
 # To reproduce figures...
 1. Clone or fork this repository.
 2. [Install](https://docs.astral.sh/uv/getting-started/installation/) [uv](https://docs.astral.sh/uv/) if it isn't already installed.
