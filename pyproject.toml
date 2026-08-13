@@ -8,7 +8,6 @@ license = { file = "LICENSE" }
 authors = [{ name = "Ho Yin Chau" }]
 dependencies = [
     "xarray",
-    "scikit-image",
     "hsluv",
 ]
 
@@ -33,6 +32,13 @@ conflicts = [
         { package = "niarb", extra = "pt26cu124" },
         { package = "niarb", extra = "pt27cu128" },
     ],
+]
+# compatibility with legacy OSes such as CentOS 7
+constraint-dependencies = [
+    "scipy < 1.17",
+    "numpy < 2.3",
+    "pandas < 2.3.3",
+    "contourpy < 1.3.3",
 ]
 
 [tool.uv.sources]
