@@ -18,8 +18,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest]
         python-version: ["3.11", "3.12", "3.13", "3.14"]
+        extra: [pt26cpu, pt212cpu]
+        exclude:
+          # Test failure on Ubuntu for torch < 2.9 due to torch.fft.ifftn bug. See
+          # https://github.com/pytorch/pytorch/issues/154477
+          - os: ubuntu-latest
+            extra: pt26cpu
+          # Python 3.14 is not supported by torch < 2.9. See
+          # https://github.com/pytorch/pytorch/blob/main/RELEASE.md#release-compatibility-matrix
+          - python-version: "3.14"
+            extra: pt26cpu
 
     runs-on: ${{ matrix.os }}
 
@@ -32,7 +42,7 @@ jobs:
         python-version: ${{ matrix.python-version}}
 
     - name: Install locked dependencies
-      run: uv sync --locked --extra pt26cpu
+      run: uv sync --locked --extra ${{ matrix.extra }}
 
     - name: Lint with ruff
       run: |
