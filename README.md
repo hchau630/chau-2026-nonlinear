@@ -4,6 +4,9 @@
 # About
 Code for fitting firing rate models of mouse V1 used in my projects.
 
+> [!NOTE]
+> Windows is currently not supported. Please open an issue if you would like to use this on Windows.
+
 # Development
 There are two ways to set things up. The preferred method is to use [uv](https://docs.astral.sh/uv/):
 1. Clone or fork this repository.
