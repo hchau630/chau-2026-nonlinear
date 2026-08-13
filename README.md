@@ -4,7 +4,7 @@
 # About
 Code for fitting firing rate models of mouse V1 used in my projects.
 
-# Setup
+# Development
 There are two ways to set things up. The preferred method is to use [uv](https://docs.astral.sh/uv/):
 1. Clone or fork this repository.
 2. [Install](https://docs.astral.sh/uv/getting-started/installation/) uv if it isn't already installed.
@@ -20,6 +20,12 @@ Alternatively, if you don't want to use uv, you can clone or fork this repositor
 pip install torch=={TORCH_VERSION} --extra-index-url https://download.pytorch.org/whl/{CUDA} -f https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-{TORCH_VERSION}%2B{CUDA}.html -e .
 ```
 where `{TORCH_VERSION}` should be replaced by either `2.6.0`, `2.7.1`, `2.8.0`, `2.9.1`, `2.10.0`, `2.11.0`, or `2.12.1`, and `{CUDA}` is the same as before. The downside is that the packages installed will be different from those specified in `uv.lock`, so your development environment will be different from mine.
+
+# Installation
+If you just want to install the package instead of developing it (which I don't really recommend, since you'll likely find the package inadequate for your needs in its current form), you can do (command untested)
+```
+pip install torch=={TORCH_VERSION} --extra-index-url https://download.pytorch.org/whl/{CUDA} -f https://torch-bessel.s3.us-east-2.amazonaws.com/whl/torch-{TORCH_VERSION}%2B{CUDA}.html git+https://github.com/hchau630/niarb
+```
 
 # Usage
 This package comes with a command line interface (CLI) for fitting models and plotting them with only a configuration file. To fit models, simply write a configuration file, e.g. `fit.toml` (the configuration can be written in JSON or TOML), then do `niarb fit fit.toml -o fits` to fit models according to the specificaation of your configuration file and outputs the results to a directory called `fits`. Similarly, you can use the command `niarb plot {YOUR_CONFIG}` to create various plots, such as distribution of fitted model parameters and the perturbation response of fitted models. For more details on how to write the configuration files, please refer to the examples located in the directory `examples/`.
