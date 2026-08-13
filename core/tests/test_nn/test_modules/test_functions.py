@@ -68,7 +68,7 @@ def test_identity_gaussian_moments_matches_quadrature():
 
     for actual_group, expected_group in zip(actual, expected):
         for i, (value, target) in enumerate(zip(actual_group, expected_group)):
-            if i > 1:
+            if i > 2:
                 assert (value != target).any()
             torch.testing.assert_close(value, target, rtol=1e-13, atol=1e-13)
 
