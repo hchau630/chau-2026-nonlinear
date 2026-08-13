@@ -45,3 +45,4 @@ mean_VIP = "VIP response"
 [plots.__include__.replace]
 spreadout = "Diffuse"
 compact = "Compact"
+
