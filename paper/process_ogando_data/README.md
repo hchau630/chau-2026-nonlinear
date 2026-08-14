@@ -12,5 +12,5 @@ python process_ogando_data/validate_normalized.py ogando_data
 ```
 4. Run
 ```
-python process_ogando_data/preprocess_data.py ogando_data --2d --normalized -o
+python process_ogando_data/preprocess_data.py ogando_data --2d -o
 ```
