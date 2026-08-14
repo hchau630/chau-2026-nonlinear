@@ -8,16 +8,7 @@ All run commands:
 |---------|---------|
 | 2G-H | `for MODE in numerical; do mkdir slurm/run/$MODE; MODE=$MODE PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True" sbatch --array 0-4 -c 8 --mem-per-cpu=4gb --time 20:00:00 -p burst,miller -A miller --gres=gpu:a40:1 --output slurm/run/$MODE/%A_%a.out niarb run run.toml --linfo --ldebug niarb.integrate; done` |
 
-Optional run commands:
-`for MODE in analytical; do mkdir slurm/run/$MODE; MODE=$MODE PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True" sbatch --array 0-4 -c 8 --mem-per-cpu=4gb --time 20:00:00 -p burst,miller -A miller --gres=gpu:a40:1 --output slurm/run/$MODE/%A_%a.out niarb run run.toml --linfo; done`
-
 All plot commands:
 | Figures | Command |
 |---------|---------|
 | 2G-H | `for INDICES in 0; do for MODE in numerical; do for FILENAME in plot/resp_paper_indiv.toml; do INDICES=$INDICES MODE=$MODE sbatch -c 8 --mem-per-cpu=8gb --time 00:10:00 --output slurm/plot/%A.out niarb plot $FILENAME -o figures/$(basename $FILENAME .toml)_$INDICES/$MODE --linfo; done; done; done` |
-
-Optional plot commands:
-`for INDICES in 0-4; do for FILENAME in plot/params_EI/param.toml; do INDICES=$INDICES sbatch -c 8 --mem-per-cpu=8gb --time 00:10:00 --output slurm/plot/%A.out niarb plot $FILENAME -o figures/$(basename $FILENAME .toml)_$INDICES --linfo; done; done`
-`for INDICES in 0-4; do for FILENAME in plot/params_EI/dist.toml; do INDICES=$INDICES sbatch -c 8 --mem-per-cpu=8gb --time 00:10:00 --output slurm/plot/%A.out niarb plot $FILENAME -o figures/$(basename $FILENAME .toml)_$INDICES --linfo; done; done`
-`for INDICES in 0-4; do for MODE in numerical analytical; do for FILENAME in plot/resp_indiv.toml; do INDICES=$INDICES MODE=$MODE sbatch -c 8 --mem-per-cpu=8gb --time 00:10:00 --output slurm/plot/%A.out niarb plot $FILENAME -o figures/$(basename $FILENAME .toml)_$INDICES/$MODE --linfo; done; done; done`
-
