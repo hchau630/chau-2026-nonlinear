@@ -8,7 +8,6 @@ paper/model_fits/**/slurm
 
 # data files
 ogando_data
-oldenburg-2024-logic
 
 # asv
 .asv/
