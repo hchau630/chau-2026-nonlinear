@@ -11,10 +11,10 @@ Code for "A nonlinear inhibition pathway underlying cortical responses to tuned 
    ```
    uv sync --locked --extra {CUDA}
    ```
-   in the directory containing this file, where `{CUDA}` should be replaced by either `cpu`, `cu124`, or `cu128`. Choose `cpu` if you do not have a GPU or you are on macOS. Choose `cu124` if you have a GPU with [compute capability](https://developer.nvidia.com/cuda/gpus) (CC) <= 9.0. Choose `cu128` otherwise (this installs a version of PyTorch that is newer than the one used by me, so reproducibility may not be fully guaranteed).
+   in this directory, where `{CUDA}` should be replaced by either `cpu`, `cu124`, or `cu128`. Choose `cpu` if you do not have a GPU or you are on macOS. Choose `cu124` if you have a GPU with [compute capability](https://developer.nvidia.com/cuda/gpus) (CC) <= 9.0. Choose `cu128` otherwise (this installs a version of PyTorch that is newer than the one used by me, so reproducibility may not be fully guaranteed).
 4. Activate the virtual environment by running
    ```
    source .venv/bin/activate
    ```
-   in the same directory.
+   in this directory.
 5. Navigate to the directory `paper` and follow the instructions in `paper/README.md`.

@@ -1,7 +1,15 @@
+# Setup
+
+If you want to run commands which reference `oldenburg-2024-logic` (e.g. for reproducing Figure 2D/E), you need to run these two additional commands first in top-level directory of this repository (one-time only):
+```
+git submodule init
+git submodule update
+```
+
 # Commands for generating paper figures
 
-| Figure | Filename | Command |
-| ------ | -------- | ------- |
+| Figure | Filename | Command (run in this directory) |
+| ------ | -------- | ------------------------------- |
 | 1A inset | `1a.pdf` | `python plot_ricciardi.py -o figures` |
 | 1B | `plot_rnn_theory/log_normal_vary_n_perturbed/rel_err_n_unperturbed.pdf` | `python plot_rnn_theory.py resp --dh 20 --n-perturbed 1 10 --log-normal --use-t --t-max 100 --n-trials 300000 -o figures/plot_rnn_theory/log_normal_vary_n_perturbed` |
 | 1C, S1A, S1B | `plot_rnn_theory/log_normal_vary_dh_n_perturbed/*.pdf` | `python plot_rnn_theory.py resp --dh 10 15 20 25 30 --n-perturbed 1 5 10 20 50 -n 3000 --log-normal --use-t --t-max 100 --n-trials 300000 -o figures/plot_rnn_theory/log_normal_vary_dh_n_perturbed` |
@@ -21,8 +29,9 @@
 | S2G (right) | `S2g_cotuned.pdf` | `python plot_model_ensembles.py ori -a 1.32 -b 0.66 -k -7.3 19.0 -12.0 -o figures/S2g_cotuned.pdf` |
 
 # Commands for generating model fitting data
-| Data | Command |
-| ---- | ------- |
+
+| Data | Command (run in this directory) |
+| ---- | ------------------------------- |
 | `ensemble_space_ori_xy_data.pkl` | `python plot_oldenburg_data.py oldenburg-2024-logic --2d --out-data-dir [path]` |
 | `ensemble_space_v_ori_osi_xy_data.pkl` | `python plot_oldenburg_data.py oldenburg-2024-logic --rel-ori --2d --out-data-dir [path]` |
 | `zeros_rel_ori_325_PV_SST_VIP.pkl` (regularization) | `python generate_zeros_data.py 325 0.01 --rel-ori -c PV SST VIP -o [path]` |
