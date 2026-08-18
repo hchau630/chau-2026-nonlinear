@@ -1,0 +1,12 @@
+figures/resp_paper_0-9/numerical
+figures/resp_paper2_0-9/numerical
+figures/cotuned_supp1_0-9/numerical
+figures/cotuned_supp2_0-9/numerical
+figures/cotuned_supp3_0-9/numerical
+figures/resp_paper_indiv_0/matrix_quasi_linear_approx
+figures/resp_dist_0/matrix_quasi_linear_approx
+figures/resp_compare_matrix_second_order_decompose_2-2_0
+figures/dist_0-9
+figures/Lij_0-9
+figures/mean_variance_corr_0-9/numerical
+

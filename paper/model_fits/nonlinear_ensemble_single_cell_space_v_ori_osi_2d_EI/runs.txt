@@ -1,0 +1,8 @@
+runs/numerical/5.0309455395e-01.pkl
+runs/matrix_quasi_linear_approx/5.0309455395e-01.pkl
+runs/matrix_second_order_approx/5.0309455395e-01.pkl
+runs/matrix_second_order_approx_2-1/5.0309455395e-01.pkl
+runs/matrix_second_order_approx_2-2/5.0309455395e-01.pkl
+runs/matrix_second_order_approx_2-2_linear_PYR/5.0309455395e-01.pkl
+runs/matrix_second_order_approx_2-2_linear_PV/5.0309455395e-01.pkl
+

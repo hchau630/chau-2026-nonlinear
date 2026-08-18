@@ -1,0 +1,10 @@
+runs/numerical
+runs/matrix_quasi_linear_approx
+runs/numerical_reclinear_PV
+runs/numerical_reclinear_SST
+runs/numerical_reclinear_VIP
+runs/matrix_second_order_approx_2-2_reclinear_except_PV
+runs/matrix_second_order_approx_2-2_reclinear_except_SST
+runs/matrix_second_order_approx_2-2_reclinear_except_VIP
+runs/matrix_linear_approx_uniform
+
