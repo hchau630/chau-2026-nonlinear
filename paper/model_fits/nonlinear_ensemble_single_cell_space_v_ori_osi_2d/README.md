@@ -4,7 +4,7 @@
 | --------- | ----------- |
 | 4B | `resp_paper_0-9/numerical/dr_10_space-cell_type=PYR.pdf` |
 | 4C | `resp_paper_0-9/numerical/dr_10_mean_nearby-cell_type=PYR.pdf` |
-| 4D | `cotuned_supp_0-9/numerical/numerical.pdf`, `cotuned_supp2_0-9/numerical/numerical-density=compact.pdf`, `cotuned_supp3_0-9/numerical/numerical-density=compact.pdf` |
+| 4D | `cotuned_supp1_0-9/numerical/numerical.pdf`, `cotuned_supp2_0-9/numerical/numerical-density=compact.pdf`, `cotuned_supp3_0-9/numerical/numerical-density=compact.pdf` |
 | 4E-G (left) | `resp_paper_indiv_0/matrix_quasi_linear_approx/dv_10_space_ori-density=compact.pdf` |
 | 4E-G (center left) | `resp_dist_0/matrix_quasi_linear_approx/dv_nearby_all-loss=0.50543832779.pdf` |
 | 4E-G (center right) | `resp_dist_0/matrix_quasi_linear_approx/Hdv2_nearby_all-loss=0.50543832779.pdf` |

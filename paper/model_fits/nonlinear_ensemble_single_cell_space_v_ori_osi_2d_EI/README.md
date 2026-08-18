@@ -8,8 +8,8 @@
 | 3B | `resp_compare_matrix_second_order_decompose_0/resp_mean_nearby-loss=5.0309455395e-01-cell_type=PYR.pdf` |
 | 3C | `resp_compare_matrix_second_order_decompose_2-2_0/resp_mean_nearby-loss=5.0309455395e-01-cell_type=PYR.pdf` |
 | 3F (left) | `resp_paper_indiv_0/matrix_quasi_linear_approx/dv_10_space_ori-loss=0.50309455395-cell_type=PV.pdf` |
-| 3F (center left) | `resp_dist/matrix_quasi_linear_approx/dv_nearby_all-loss=0.50309455395.pdf` |
-| 3F (center right) | `resp_dist/matrix_quasi_linear_approx/Hdv2_nearby_all-loss=0.50309455395.pdf` |
+| 3F (center left) | `resp_dist_0/matrix_quasi_linear_approx/dv_nearby_all-loss=0.50309455395.pdf` |
+| 3F (center right) | `resp_dist_0/matrix_quasi_linear_approx/Hdv2_nearby_all-loss=0.50309455395.pdf` |
 | 3F (right) | From 3C |
 | S2H | `resp_paper_indiv2_0/numerical/dr_10_space-loss=0.50309455395-cell_type=PV.pdf` |
 | S2I | `resp_paper_indiv2_0/numerical/dr_10_mean_nearby-loss=0.50309455395-cell_type=PV.pdf` |
@@ -41,7 +41,7 @@ These commands were run on a SLURM cluster with A40 GPUs. If you're on a SLURM c
 | Figures | Command(s) (run in this directory) |
 | ------- | ---------------------------------- |
 | 2I-J, 3A | <pre>`for MODE in numerical; do mkdir -p slurm/run/$MODE; MODE=$MODE PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True" sbatch --array 0 -c 8 --mem-per-cpu=4gb --time 20:00:00 --gres=gpu:a40:1 --output slurm/run/$MODE/%A_%a.out niarb run run.toml --linfo --ldebug niarb.integrate; done`</pre> |
-| 3A-B, 3F, S3 | <pre>`for MODE in matrix_quasi_linear_approx; do mkdir -p slurm/run/$MODE; MODE=$MODE PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True" sbatch --array 0 -c 8 --mem-per-cpu=4gb --time 20:00:00 --gres=gpu:a40:1 --output slurm/run/$MODE/%A_%a.out niarb run run.toml --linfo; done`<br><br>`for MODE in matrix_second_order_approx matrix_second_order_approx_2-1 matrix_second_order_approx_2-2; do mkdir -p slurm/run/$MODE; MODE=$MODE PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True" sbatch --array 0-4 -c 8 --mem-per-cpu=4gb --time 20:00:00 --gres=gpu:a40:1 --output slurm/run/$MODE/%A_%a.out niarb run run.toml --linfo; done`</pre> |
+| 3A-B, 3F, S3 | <pre>`for MODE in matrix_quasi_linear_approx matrix_second_order_approx matrix_second_order_approx_2-1 matrix_second_order_approx_2-2; do mkdir -p slurm/run/$MODE; MODE=$MODE PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True" sbatch --array 0 -c 8 --mem-per-cpu=4gb --time 20:00:00 --gres=gpu:a40:1 --output slurm/run/$MODE/%A_%a.out niarb run run.toml --linfo; done`</pre> |
 | 3C | <pre>`python modify_state_dict.py 0`<br><br>`for MODE in matrix_second_order_approx_2-2; do for FILENAME in linear_PYR linear_PV; do mkdir -p slurm/run/${MODE}_${FILENAME}; MODE=$MODE PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True" sbatch --array 0 -c 8 --mem-per-cpu=4gb --time 20:00:00 --gres=gpu:a40:1 --output slurm/run/${MODE}_${FILENAME}/%A_%a.out niarb run run_${FILENAME}.toml --linfo; done; done`</pre> |
 
 # Command for producing model fits in directory `fits`

@@ -1,8 +1,8 @@
 # model fitting on server
-paper/model_fits/**/figures
 paper/model_fits/**/modified_fits
 paper/model_fits/**/runs
 paper/model_fits/**/slurm
+paper/model_fits/**/*.tar.gz
 
 # data files
 ogando_data
