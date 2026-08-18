@@ -1,3 +1,7 @@
+# Setup
+
+To reproduce figures, you need to first download `nonlinear_ensemble_single_cell_space_v_ori_osi_2d.tar.gz` from 10.5281/zenodo.21987736 and extract its content into this directory. You should get a `runs` directory.
+
 # Table of figures
 
 | Figure(s) | Filename(s) (in directory `figures`) |
