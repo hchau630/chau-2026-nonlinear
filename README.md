@@ -39,5 +39,6 @@ Code for "A nonlinear inhibition pathway underlying cortical responses to tuned 
 │   └── ...
 ├── pyproject.toml            # dependency specifications
 ├── README.md                 # read me!
-└── uv.lock                   # universal lockfile for exact python environment reproduction
+├── uv.lock                   # universal lockfile for exact python environment reproduction
+└── ...
 ```
