@@ -1,3 +1,6 @@
+# ignore for now
+paper/figures/variance_mean
+
 # model fitting on server
 paper/model_fits/**/modified_fits
 paper/model_fits/**/runs
