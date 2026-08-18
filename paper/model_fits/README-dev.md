@@ -1,5 +1,5 @@
 To copy select figure files:
-```for DIRECTORY in $(cat figures.txt); do cp -r ${DIRECTORY} figures_copy; done```
+```for DIRECTORY in $(cat figures.txt); do cp --parents -r ${DIRECTORY} target; done```
 
 To create `runs.tar.gz` files:
 ```tar -hczvf runs.tar.gz -T runs.txt```
