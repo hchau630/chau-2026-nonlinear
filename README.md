@@ -18,3 +18,26 @@ Code for "A nonlinear inhibition pathway underlying cortical responses to tuned 
    ```
    in this directory.
 5. Navigate to the directory `paper` and follow the instructions in `paper/README.md`.
+
+# Repository structure
+
+```
+.
+├── core                      # copy of https://github.com/hchau630/niarb (via git subtree)
+│   ├── src/niarb             # source code of the `niarb` package used in `paper/` scripts
+│   ├── tests                 # tests for the `niarb` package
+│   └── ...
+├── paper                     # scripts for generating figures
+│   ├── figures               # figures that do not involve model fitting
+│   ├── model_fits            # files and figures involving model fitting
+│   │   ├── data              # data to which models are fitted
+│   │   ├── linear_*_2d       # files and figures involving the linear model
+│   │   ├── nonlinear_*_2d    # files and figures involving the 4-cell-type nonlinear model
+│   │   └── nonlinear_*_2d_EI # files and figures involving the E-I nonlinear model
+│   ├── oldenburg-2024-logic  # git submodule of a fork of the repository for Oldenburg et al. (2024)
+│   ├── plot_*.py             # scripts for generating figures that do not involve model fitting
+│   └── ...
+├── pyproject.toml            # dependency specifications
+├── README.md                 # read me!
+└── uv.lock                   # universal lockfile for exact python environment reproduction
+```
