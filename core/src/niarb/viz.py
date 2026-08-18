@@ -458,13 +458,14 @@ def lmstatplot(
     x=None,
     y=None,
     logx=False,
-    loc="upper right",
+    loc=None,
     alpha=0.5,
     verbosity=1,
     color=None,
     label=None,
     marker=None,
     method=None,
+    alphas: Sequence[float] = (0.05, 0.01, 0.001),
     n_resamples=9999,
     format_spec=".2g",
     rng=None,
@@ -502,14 +503,25 @@ def lmstatplot(
             rf"Intercept: {fit.params.loc['const']:{format_spec}}$"
             rf"\pm${fit.bse.loc['const']:{format_spec}}"
         ),
-        f"$R^2$: {fit.rsquared:{format_spec}}, P-value: {pvalue:{format_spec}}",
+        f"$R^2$: {fit.rsquared:{format_spec}}",
     ]
 
-    if verbosity == 0:
-        text = text[:-1] + [
-            f"$R^2$: {fit.rsquared:{format_spec}}",
-            f"p = {pvalue:{format_spec}}",
-        ]
+    if verbosity > 0:
+        text.append(f"P-value: {pvalue:{format_spec}}")
+    elif verbosity == 0:
+        text.append(f"p = {pvalue:{format_spec}}")
+    else:
+        if np.isnan(pvalue):
+            logger.warning("p-value is NaN.")
+            text.append(None)
+        elif pvalue >= alphas[0]:
+            text.append(None)
+        elif pvalue >= alphas[1]:
+            text.append("*")
+        elif pvalue >= alphas[2]:
+            text.append("**")
+        else:
+            text.append("***")
 
     if verbosity <= 0:
         spec = plt.gca().get_subplotspec()
@@ -518,8 +530,11 @@ def lmstatplot(
             row, col = divmod(start, ncols)
             text = [f"Subplot ({row}, {col}):"] + text
 
-        info, text = (text[:-1], text[-1:]) if verbosity == 0 else (text, [])
+        info, text = text[:-1], text[-1:]
         logger.info("\n".join(info))
+
+    if loc is None:
+        loc = "upper right" if verbosity >= 0 else "upper center"
 
     text = AnchoredText("\n".join(text), loc, **kwargs)
     text.patch.set_alpha(alpha)
