@@ -505,7 +505,7 @@ def lmstatplot(
         ),
         f"$R^2$: {fit.rsquared:{format_spec}}, P-value: {pvalue:{format_spec}}",
     ]
- 
+
     if verbosity <= 1:
         spec = plt.gca().get_subplotspec()
         if spec is not None:
