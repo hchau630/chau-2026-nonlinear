@@ -460,7 +460,7 @@ def lmstatplot(
     logx=False,
     loc=None,
     alpha=0.5,
-    verbosity=1,
+    verbosity=0,
     color=None,
     label=None,
     marker=None,
@@ -503,38 +503,36 @@ def lmstatplot(
             rf"Intercept: {fit.params.loc['const']:{format_spec}}$"
             rf"\pm${fit.bse.loc['const']:{format_spec}}"
         ),
-        f"$R^2$: {fit.rsquared:{format_spec}}",
+        f"$R^2$: {fit.rsquared:{format_spec}}, P-value: {pvalue:{format_spec}}",
     ]
-
-    if verbosity > 0:
-        text.append(f"P-value: {pvalue:{format_spec}}")
-    elif verbosity == 0:
-        text.append(f"p = {pvalue:{format_spec}}")
-    else:
-        if np.isnan(pvalue):
-            logger.warning("p-value is NaN.")
-            text.append(None)
-        elif pvalue >= alphas[0]:
-            text.append(None)
-        elif pvalue >= alphas[1]:
-            text.append("*")
-        elif pvalue >= alphas[2]:
-            text.append("**")
-        else:
-            text.append("***")
-
-    if verbosity <= 0:
+ 
+    if verbosity <= 1:
         spec = plt.gca().get_subplotspec()
         if spec is not None:
             _, ncols, start, _ = spec.get_geometry()
             row, col = divmod(start, ncols)
             text = [f"Subplot ({row}, {col}):"] + text
 
-        info, text = text[:-1], text[-1:]
-        logger.info("\n".join(info))
+        logger.info("\n".join(text))
+
+        if verbosity == 1:
+            text = [f"p = {pvalue:{format_spec}}"]
+        elif verbosity < 0:
+            text = []
+        elif np.isnan(pvalue):
+            logger.warning("p-value is NaN.")
+            text = []
+        elif pvalue >= alphas[0]:
+            text = []
+        elif pvalue >= alphas[1]:
+            text = ["*"]
+        elif pvalue >= alphas[2]:
+            text = ["**"]
+        else:
+            text = ["***"]
 
     if loc is None:
-        loc = "upper right" if verbosity >= 0 else "upper center"
+        loc = "upper center" if verbosity == 0 else "upper right"
 
     text = AnchoredText("\n".join(text), loc, **kwargs)
     text.patch.set_alpha(alpha)
