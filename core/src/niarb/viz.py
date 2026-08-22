@@ -675,7 +675,7 @@ def _ttest_rel(
             "`method` must be an instance of `PermutationMethod`, an instance "
             "of `MonteCarloMethod`, or None (default)."
         )
-    
+
     if nan_policy != "propagate":
         raise NotImplementedError()
 
