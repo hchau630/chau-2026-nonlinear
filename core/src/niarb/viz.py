@@ -484,6 +484,8 @@ def lmstatplot(
     fit = sm.OLS(data[y], sm.add_constant(data[x])).fit()
     pvalue = fit.pvalues.loc[x]
 
+    logger.info(f"{method=}, {n_resamples=}, {rng=}")
+
     if method == "permutation":
         method_ = stats.PermutationMethod(n_resamples=n_resamples, rng=rng)
         pvalue = stats.pearsonr(data[x], data[y], method=method_).pvalue
@@ -746,6 +748,9 @@ def statplot(
         test = _ttest_rel
     elif isinstance(test, str):
         test = getattr(stats, test)
+
+    logger.info(repr(test))
+    logger.info(repr(test_kws))
 
     if utils.is_interval_dtype(data[x].dtype):
         data = data.copy()
