@@ -18,6 +18,13 @@ from niarb import utils, viz
 logger = logging.getLogger(__name__)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+PDF_METADATA = {
+    "CreationDate": None,
+    "ModDate": None,
+    "Creator": None,
+    "Producer": None,
+}
+
 
 def add_parser_arguments(parser):
     parser.add_argument("--out", "-o", type=Path, help="path to output directory")
@@ -70,7 +77,10 @@ def run(
         for k, v in figs.items():
             path = out / f"{k}.{file_type}"
             path.parent.mkdir(exist_ok=True, parents=True)
-            v.savefig(path, dpi=dpi, metadata={"Subject": " ".join(sys.argv)})
+            metadata = {"Subject": " ".join(["niarb"] + sys.argv[1:])}
+            if file_type == "pdf":
+                metadata = PDF_METADATA | metadata  # make pdf exactly reproducible
+            v.savefig(path, dpi=dpi, metadata=metadata)
     if show:
         plt.show()
 
