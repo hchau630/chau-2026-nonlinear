@@ -65,7 +65,11 @@ def mapped(func, mapping):
 
 
 def cat_logger(source, kwargs):
-    columns = [v for k, v in kwargs.items() if k in {"x", "y", "col", "row", "hue"}]
+    columns = [
+        v
+        for k, v in kwargs.items()
+        if k in {"x", "y", "col", "row", "hue"} and v is not None
+    ]
 
     class LoggingEstimateAggregator(EstimateAggregator):
         def __call__(self, data, var):
