@@ -3,6 +3,7 @@ import importlib
 import inspect
 import logging
 import math
+from collections import namedtuple
 from collections.abc import Callable, Mapping, Sequence
 from functools import partial
 from itertools import accumulate
@@ -49,6 +50,7 @@ DEFAULT_LINE_KWS = {
 
 logger = logging.getLogger(__name__)
 
+TtestResult = namedtuple("TtestResult", ["statistic", "pvalue"])
 
 def mapped(func, mapping):
     @functools.wraps(func)
@@ -662,6 +664,52 @@ def histplot(
     return ax
 
 
+def _ttest_rel(
+    a, b, axis=0, nan_policy="propagate", alternative="two-sided", method=None
+):
+    if method is None:
+        return stats.ttest_rel(a, b, axis=axis, nan_policy=nan_policy, alternative=alternative)
+
+    if not isinstance(method, stats.PermutationMethod | stats.MonteCarloMethod):
+        raise TypeError(
+            "`method` must be an instance of `PermutationMethod`, an instance "
+            "of `MonteCarloMethod`, or None (default)."
+        )
+    
+    if nan_policy != "propagate":
+        raise NotImplementedError()
+
+    a, b = np.asarray(a), np.asarray(b)
+    if axis is None:
+        a, b, axis = np.ravel(a), np.ravel(b), 0
+
+    t, prob = _ttest_rel_resampling(a, b, axis, alternative, method)
+    return TtestResult(t, prob)
+
+
+def _ttest_rel_resampling(x, y, axis, alternative, method):
+    if isinstance(method, stats.MonteCarloMethod):
+        raise NotImplementedError()
+
+    # float32 can result in nonsensical pvalue = 0 due to floating point error
+    x = np.asarray(x, dtype=np.float64)
+    y = np.asarray(y, dtype=np.float64)
+
+    def statistic(x, y, axis):
+        return stats.ttest_rel(x, y, axis=axis).statistic
+
+    res = stats.permutation_test(
+        (x, y),
+        statistic=statistic,
+        permutation_type="samples",
+        axis=axis,
+        alternative=alternative,
+        **method._asdict(),
+    )
+
+    return res.statistic, res.pvalue
+
+
 def statplot(
     data: DataFrame | None = None,
     *,
@@ -694,7 +742,9 @@ def statplot(
     if test_kws is None:
         test_kws = {}
 
-    if isinstance(test, str):
+    if test == "ttest_rel":
+        test = _ttest_rel
+    elif isinstance(test, str):
         test = getattr(stats, test)
 
     if utils.is_interval_dtype(data[x].dtype):
