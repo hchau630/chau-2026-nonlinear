@@ -7,7 +7,7 @@ To reproduce figures, you need to first download `nonlinear_ensemble_single_cell
 | Figure | Filename (in directory `figures`) |
 | ------ | --------------------------------- |
 | 2I | `resp_paper_indiv_0/numerical/dr_10_space-loss=0.50309455395-cell_type=PYR.pdf` |
-| 2J | `resp_paper_indiv_0/numerical/dr_10_mean_nearby-loss=0.50309455395-cell_type=PYR.pdf` |
+| 2J | `resp_paper_indiv_0/numerical/dr_10_mean_nearby-loss=0.50309455395-cell_type=PYR.pdf`, `resp_paper_indiv_0/numerical/dr_10_mean_nearby_transpose-loss=0.50309455395-cell_type=PYR.pdf` |
 | 3A | `resp_compare_matrix_second_order-numerical_0/resp_space-loss=5.0309455395e-01-cell_type=PYR.pdf` |
 | 3B | `resp_compare_matrix_second_order_decompose_0/resp_mean_nearby-loss=5.0309455395e-01-cell_type=PYR.pdf` |
 | 3C | `resp_compare_matrix_second_order_decompose_2-2_0/resp_mean_nearby-loss=5.0309455395e-01-cell_type=PYR.pdf` |
@@ -16,11 +16,11 @@ To reproduce figures, you need to first download `nonlinear_ensemble_single_cell
 | 3F (center right) | `resp_dist_0/matrix_quasi_linear_approx/Hdv2_nearby_all-loss=0.50309455395.pdf` |
 | 3F (right) | From 3C |
 | S2H | `resp_paper_indiv2_0/numerical/dr_10_space-loss=0.50309455395-cell_type=PV.pdf` |
-| S2I | `resp_paper_indiv2_0/numerical/dr_10_mean_nearby-loss=0.50309455395-cell_type=PV.pdf` |
+| S2I | `resp_paper_indiv2_0/numerical/dr_10_mean_nearby-loss=0.50309455395-cell_type=PV.pdf`, `resp_paper_indiv2_0/numerical/dr_10_mean_nearby_transpose-loss=0.50309455395-cell_type=PV.pdf` |
 | S3A (left) | `resp_compare_matrix_second_order-numerical_0/resp_space-loss=5.0309455395e-01-cell_type=PYR.pdf` |
-| S3A (right) | `resp_paper_indiv_0/matrix_second_order_approx/dr_10_mean_nearby-loss=5.0309455395e-01-cell_type=PYR.pdf` |
+| S3A (right) | `resp_paper_indiv_0/matrix_second_order_approx/dr_10_mean_nearby-loss=5.0309455395e-01-cell_type=PYR.pdf`, `resp_paper_indiv_0/matrix_second_order_approx/dr_10_mean_nearby_transpose-loss=5.0309455395e-01-cell_type=PYR.pdf` |
 | S3B (left) | `resp_compare_matrix_quasi_linear-numerical_0/resp_space-loss=5.0309455395e-01-cell_type=PYR.pdf` |
-| S3B (right) | `resp_paper_indiv2_0/matrix_quasi_linear_approx/dr_10_mean_nearby-loss=5.0309455395e-01-cell_type=PYR.pdf` |
+| S3B (right) | `resp_paper_indiv2_0/matrix_quasi_linear_approx/dr_10_mean_nearby-loss=5.0309455395e-01-cell_type=PYR.pdf`, `resp_paper_indiv2_0/matrix_quasi_linear_approx/dr_10_mean_nearby_transpose-loss=5.0309455395e-01-cell_type=PYR.pdf` |
 | S3C (left) | `resp_paper_indiv_0/matrix_quasi_linear_approx/dv_10_space_ori-loss=0.50309455395-cell_type=PYR` |
 | S3C (right) | `resp_paper_indiv_0/matrix_quasi_linear_approx/dv_10_space_ori-loss=0.50309455395-cell_type=PV` |
 
