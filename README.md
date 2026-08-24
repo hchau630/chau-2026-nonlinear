@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/1329312715.svg)](https://doi.org/10.5281/zenodo.22086790)
+
 # About
 Code for "A nonlinear inhibition pathway underlying cortical responses to tuned holographic optogenetic perturbations"
 
