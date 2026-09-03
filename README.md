@@ -1,7 +1,7 @@
 [![DOI](https://zenodo.org/badge/1329312715.svg)](https://doi.org/10.5281/zenodo.22086790)
 
 # About
-Code for "A nonlinear inhibition pathway underlying cortical responses to tuned holographic optogenetic perturbations"
+Code for ["A nonlinear inhibition pathway underlying cortical responses to tuned holographic optogenetic perturbations" (2026)](https://doi.org/10.64898/2026.08.27.746829)
 
 > [!NOTE]
 > Windows is currently not supported. Please open an issue if you would like to run this code on Windows.
