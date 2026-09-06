@@ -3,6 +3,7 @@ import importlib
 import inspect
 import logging
 import math
+from collections import namedtuple
 from collections.abc import Callable, Mapping, Sequence
 from functools import partial
 from itertools import accumulate
@@ -49,6 +50,7 @@ DEFAULT_LINE_KWS = {
 
 logger = logging.getLogger(__name__)
 
+TtestResult = namedtuple("TtestResult", ["statistic", "pvalue"])
 
 def mapped(func, mapping):
     @functools.wraps(func)
@@ -65,7 +67,11 @@ def mapped(func, mapping):
 
 
 def cat_logger(source, kwargs):
-    columns = [v for k, v in kwargs.items() if k in {"x", "y", "col", "row", "hue"}]
+    columns = [
+        v
+        for k, v in kwargs.items()
+        if k in {"x", "y", "col", "row", "hue"} and v is not None
+    ]
 
     class LoggingEstimateAggregator(EstimateAggregator):
         def __call__(self, data, var):
@@ -458,13 +464,14 @@ def lmstatplot(
     x=None,
     y=None,
     logx=False,
-    loc="upper right",
+    loc=None,
     alpha=0.5,
-    verbosity=1,
+    verbosity=0,
     color=None,
     label=None,
     marker=None,
     method=None,
+    alphas: Sequence[float] = (0.05, 0.01, 0.001),
     n_resamples=9999,
     format_spec=".2g",
     rng=None,
@@ -476,6 +483,8 @@ def lmstatplot(
 
     fit = sm.OLS(data[y], sm.add_constant(data[x])).fit()
     pvalue = fit.pvalues.loc[x]
+
+    logger.info(f"{method=}, {n_resamples=}, {rng=}")
 
     if method == "permutation":
         method_ = stats.PermutationMethod(n_resamples=n_resamples, rng=rng)
@@ -505,21 +514,33 @@ def lmstatplot(
         f"$R^2$: {fit.rsquared:{format_spec}}, P-value: {pvalue:{format_spec}}",
     ]
 
-    if verbosity == 0:
-        text = text[:-1] + [
-            f"$R^2$: {fit.rsquared:{format_spec}}",
-            f"p = {pvalue:{format_spec}}",
-        ]
-
-    if verbosity <= 0:
+    if verbosity <= 1:
         spec = plt.gca().get_subplotspec()
         if spec is not None:
             _, ncols, start, _ = spec.get_geometry()
             row, col = divmod(start, ncols)
             text = [f"Subplot ({row}, {col}):"] + text
 
-        info, text = (text[:-1], text[-1:]) if verbosity == 0 else (text, [])
-        logger.info("\n".join(info))
+        logger.info("\n".join(text))
+
+        if verbosity == 1:
+            text = [f"p = {pvalue:{format_spec}}"]
+        elif verbosity < 0:
+            text = []
+        elif np.isnan(pvalue):
+            logger.warning("p-value is NaN.")
+            text = []
+        elif pvalue >= alphas[0]:
+            text = []
+        elif pvalue >= alphas[1]:
+            text = ["*"]
+        elif pvalue >= alphas[2]:
+            text = ["**"]
+        else:
+            text = ["***"]
+
+    if loc is None:
+        loc = "upper center" if verbosity == 0 else "upper right"
 
     text = AnchoredText("\n".join(text), loc, **kwargs)
     text.patch.set_alpha(alpha)
@@ -645,6 +666,52 @@ def histplot(
     return ax
 
 
+def _ttest_rel(
+    a, b, axis=0, nan_policy="propagate", alternative="two-sided", method=None
+):
+    if method is None:
+        return stats.ttest_rel(a, b, axis=axis, nan_policy=nan_policy, alternative=alternative)
+
+    if not isinstance(method, stats.PermutationMethod | stats.MonteCarloMethod):
+        raise TypeError(
+            "`method` must be an instance of `PermutationMethod`, an instance "
+            "of `MonteCarloMethod`, or None (default)."
+        )
+
+    if nan_policy != "propagate":
+        raise NotImplementedError()
+
+    a, b = np.asarray(a), np.asarray(b)
+    if axis is None:
+        a, b, axis = np.ravel(a), np.ravel(b), 0
+
+    t, prob = _ttest_rel_resampling(a, b, axis, alternative, method)
+    return TtestResult(t, prob)
+
+
+def _ttest_rel_resampling(x, y, axis, alternative, method):
+    if isinstance(method, stats.MonteCarloMethod):
+        raise NotImplementedError()
+
+    # float32 can result in nonsensical pvalue = 0 due to floating point error
+    x = np.asarray(x, dtype=np.float64)
+    y = np.asarray(y, dtype=np.float64)
+
+    def statistic(x, y, axis):
+        return stats.ttest_rel(x, y, axis=axis).statistic
+
+    res = stats.permutation_test(
+        (x, y),
+        statistic=statistic,
+        permutation_type="samples",
+        axis=axis,
+        alternative=alternative,
+        **method._asdict(),
+    )
+
+    return res.statistic, res.pvalue
+
+
 def statplot(
     data: DataFrame | None = None,
     *,
@@ -677,8 +744,13 @@ def statplot(
     if test_kws is None:
         test_kws = {}
 
-    if isinstance(test, str):
+    if test == "ttest_rel":
+        test = _ttest_rel
+    elif isinstance(test, str):
         test = getattr(stats, test)
+
+    logger.info(repr(test))
+    logger.info(repr(test_kws))
 
     if utils.is_interval_dtype(data[x].dtype):
         data = data.copy()
