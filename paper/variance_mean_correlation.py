@@ -29,7 +29,7 @@ def main():
     parser.add_argument("--subset", action="store_true")
     parser.add_argument("--use-old-N", action="store_true")
     parser.add_argument("--use-old-distance", action="store_true")
-    parser.add_argument("--estimator", type=str, default="median")
+    parser.add_argument("--estimator", "-e", type=str, default="median")
     parser.add_argument("--kind", type=str, choices=["var", "std"], default="var")
     parser.add_argument("--logx", action="store_true")
     parser.add_argument("--ens-size", "-s", type=int, nargs=2, default=(9, 11))
@@ -160,7 +160,7 @@ def main():
             "n_resamples": args.n_resamples,
             "rng": 0,
             "format_spec": ".4g",
-            "verbosity": -1,
+            "verbosity": 0,
             "frameon": False,
         },
         "rc_params": {
