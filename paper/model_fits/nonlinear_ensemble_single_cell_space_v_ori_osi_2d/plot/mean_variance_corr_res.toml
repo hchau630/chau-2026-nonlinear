@@ -1,0 +1,62 @@
+tag_names = ["path", "loss"]
+
+[dataframes.__matrix__]
+path = { __call__ = ["niarb.io", "iterdir"], path = { __format__ = "runs/{MODE}" }, pattern = "*.pkl", indices = { __indices__ = { __environ__ = "INDICES" } } }
+
+[[dataframes.__include__]]
+loss = { __eval__ = "float(path.stem)" }
+func = ["niarb.io", "load_data"]
+paths = { __eval__ = "path" }
+# query = "N == 10 and dh == 0"
+query = "N == 10 and distance > 15 and distance < 75"
+pivot_table = { index = ["loss", "instance_idx", "stim_idx", "density"], columns = "cell_type", values = "dr", aggfunc = ["mean", "median", "var"] }
+
+[plots]
+__ignore__ = ["x_ct"]
+
+[[plots.__matrix__]]
+x_ct = ["PYR", "PV", "SST", "VIP"]
+y = ["mean_PYR", "mean_PV", "mean_SST", "mean_VIP"]
+
+[[plots.__matrix__]]
+x_ct = ["PYR", "PV", "SST", "VIP"]
+y = ["median_PYR", "median_PV", "median_SST", "median_VIP"]
+
+[[plots.__include__]]
+name = { __eval__ = "f'var_{x_ct}-{y}'" }
+func = "lmplot"
+x = { __eval__ = "f'var_{x_ct}'" }
+x_partial = { __eval__ = "f'mean_{x_ct}'" }
+y_partial = { __eval__ = "f'mean_{x_ct}'" }
+# hue = "density"
+# hue_order = ["spreadout", "compact"]
+col = "loss"
+col_wrap = 5
+n_boot = 9999
+statannot = true
+statannot_kws = { method = "permutation", n_resamples = 999999, frameon = false }
+line_kws = { color = "black" }
+scatter_kws = { s = 4, edgecolor = "none", facecolor = "black" }
+facet_kws = { sharex = false, sharey = false }
+height = "paper"
+# aspect = 1.1
+rc_params = "paper"
+
+[plots.__include__.mapping]
+var_PYR = "Pyr variance res."
+var_PV = "PV variance res."
+var_SST = "SST variance res."
+var_VIP = "VIP variance res."
+mean_PYR = "Pyr response res."
+mean_PV = "PV response res."
+mean_SST = "SST response res."
+mean_VIP = "VIP response res."
+median_PYR = "Pyr median res."
+median_PV = "PV median res."
+median_SST = "SST median res."
+median_VIP = "VIP median res."
+
+[plots.__include__.replace]
+spreadout = "Diffuse"
+compact = "Compact"
+

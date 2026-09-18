@@ -56,7 +56,7 @@ TtestResult = namedtuple("TtestResult", ["statistic", "pvalue"])
 def mapped(func, mapping):
     @functools.wraps(func)
     def wrapper(data=None, **kwargs):
-        keys = {"x", "y", "hue", "col", "row", "style"}
+        keys = {"x", "y", "x_partial", "y_partial", "hue", "col", "row", "style"}
         data = data.rename(columns=mapping)
         kwargs = {
             k: mapping[v] if (k in keys) and (v in mapping) else v
@@ -235,8 +235,9 @@ def figplot(
             statannot_kws = {k: kwargs[k] for k in keys if k in kwargs} | (
                 statannot_kws or {}
             )
+            keys = {"x", "y", "x_partial", "y_partial", "hue", "col", "row", "style"}
             statannot_kws = {
-                k: mapping[v] if (k in {"x", "y", "hue"}) and (v in mapping) else v
+                k: mapping[v] if (k in keys) and (v in mapping) else v
                 for k, v in statannot_kws.items()
             }
             logger.debug(f"statannot_kws: {statannot_kws}")
