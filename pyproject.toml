@@ -17,8 +17,9 @@ cu124 = ["niarb[pt26cu124]", "torchdiffeq"]
 cu128 = ["niarb[pt27cu128]", "torchdiffeq"]
 
 [dependency-groups]
-lint = [
+dev = [
     "ruff",
+    "pytest",
 ]
 
 [project.urls]

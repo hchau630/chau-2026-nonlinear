@@ -90,6 +90,7 @@ def log_normal(
 
     # handle zeros in std
     mask = std != 0
+    mask2 = ((mean == 0) & (std != 0)) | ~torch.isfinite(std)
     mean, std = mean[mask], std[mask]
 
     loc = torch.log(mean**2 / torch.sqrt(mean**2 + std**2))
@@ -97,8 +98,59 @@ def log_normal(
 
     m = torch.distributions.LogNormal(loc, scale, validate_args=validate_args)
     out[mask] = m.rsample()
+    out[mask2] = torch.nan
 
     return out
+
+
+@torch.no_grad()
+def log_normal_no_grad(
+    mean: Tensor, std: Tensor, *, validate_args: bool | None = None, generator=None
+) -> Tensor:
+    """Sample from log-normal without tracking gradients. Optimized for memory usage."""
+    # By default, we validate the arguments if code is not run with -O flag,
+    # same as the default behavior of torch.distributions.LogNormal.
+    if validate_args is None:
+        validate_args = __debug__
+
+    mean, std = torch.broadcast_tensors(mean, std)
+
+    if validate_args:
+        if mean.dtype != std.dtype or mean.device != std.device:
+            raise ValueError("mean and std must have the same dtype and device")
+        if not mean.is_floating_point():
+            raise TypeError("mean and std must be floating-point tensors")
+        if (mean < 0).any() or (std < 0).any():
+            raise ValueError("mean and std must be non-negative.")
+        if (std[mean == 0] != 0).any():
+            raise ValueError("std must be zero when mean is zero.")
+
+    sample = torch.empty_like(mean)
+    work = torch.empty_like(mean, memory_format=torch.contiguous_format)
+    torch.abs(mean, out=sample)
+    torch.abs(std, out=work)
+
+    # v = log(1 + (std / mean) ** 2), evaluated in the log domain.
+    sample.log_()
+    work.log_().sub_(sample).mul_(2)
+    sample.zero_()
+    torch.logaddexp(work, sample, out=work)
+
+    # X = exp(log(mean) + sqrt(v) * Z - v / 2), where Z ~ N(0, 1).
+    sample.normal_(generator=generator)
+    work.sqrt_()
+    sample.sub_(work, alpha=0.5).mul_(work)
+
+    # Compute log(mean), carrying invalid scales through as NaN.
+    work.mul_(0).add_(mean).abs_().log_()
+    sample.add_(work).exp_()
+
+    # Reuse work's storage: these views allocate no additional data buffer.
+    mask = work.view(-1).view(torch.bool)[: mean.numel()].view(mean.shape)
+    torch.eq(std, 0, out=mask)
+    torch.where(mask, mean, sample, out=sample).abs_()
+
+    return sample
 
 
 def resample_with_min_dist(
