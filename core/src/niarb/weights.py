@@ -159,4 +159,9 @@ def sample_log_normal(W: torch.Tensor, std: float | torch.Tensor) -> torch.Tenso
         W = W.dense()
     logger.debug(f"{W.shape=}")
 
-    return W.sign() * random.log_normal(W, W * std, validate_args=False)
+    if W.requires_grad or (isinstance(std, torch.Tensor) and std.requires_grad):
+        out = random.log_normal(W, W * std, validate_args=False)
+    else:
+        # memory-efficient path
+        out = random.log_normal_no_grad(W, W * std, validate_args=False)
+    return out.mul_(W.sign())
