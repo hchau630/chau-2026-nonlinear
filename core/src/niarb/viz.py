@@ -52,6 +52,7 @@ logger = logging.getLogger(__name__)
 
 TtestResult = namedtuple("TtestResult", ["statistic", "pvalue"])
 
+
 def mapped(func, mapping):
     @functools.wraps(func)
     def wrapper(data=None, **kwargs):
@@ -228,7 +229,7 @@ def figplot(
         if statannot:
             keys = ["x", "y", "hue", "order", "hue_order"]
             if func == lmplot:
-                keys.append("logx")
+                keys = keys + ["x_partial", "y_partial", "logx"]
 
             func = lmstatplot if func == lmplot else statplot
             statannot_kws = {k: kwargs[k] for k in keys if k in kwargs} | (
@@ -458,12 +459,23 @@ def lmplot(data=None, *, x=None, **kwargs):
     return sns.lmplot(data=data, x=x, **kwargs)
 
 
+def _residual(x, y, keep_mean=True):
+    isnan = np.isnan(x) | np.isnan(y)
+    reg = stats.linregress(x[~isnan], y[~isnan])
+    y_res = y - (reg.intercept + reg.slope * x)
+    if keep_mean:
+        y_res = y_res - y_res.mean() + y.mean()
+    return y_res
+
+
 def lmstatplot(
     data=None,
     *,
     x=None,
     y=None,
     logx=False,
+    x_partial=None,
+    y_partial=None,
     loc=None,
     alpha=0.5,
     verbosity=0,
@@ -477,8 +489,13 @@ def lmstatplot(
     rng=None,
     **kwargs,
 ):
-    if logx:
+    if logx or x_partial or y_partial:
         data = data.copy()
+    if x_partial:
+        data[x] = _residual(data[x_partial], data[x])
+    if y_partial:
+        data[y] = _residual(data[y_partial], data[y])
+    if logx:
         data[x] = np.log10(data[x])
 
     fit = sm.OLS(data[y], sm.add_constant(data[x])).fit()
@@ -670,7 +687,9 @@ def _ttest_rel(
     a, b, axis=0, nan_policy="propagate", alternative="two-sided", method=None
 ):
     if method is None:
-        return stats.ttest_rel(a, b, axis=axis, nan_policy=nan_policy, alternative=alternative)
+        return stats.ttest_rel(
+            a, b, axis=axis, nan_policy=nan_policy, alternative=alternative
+        )
 
     if not isinstance(method, stats.PermutationMethod | stats.MonteCarloMethod):
         raise TypeError(
