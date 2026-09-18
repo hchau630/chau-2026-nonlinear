@@ -91,7 +91,7 @@ order = { __call__ = ["json", "loads", { __environ__ = "MODES" } ] }
 # despine = { bottom = true, top = false }
 # spine_positions = { top = "zero" }
 statannot = true
-statannot_kws = { test = "ttest_ind", test_kws = { alternative = "greater", equal_var = false, permutations = 999999 } }
+statannot_kws = { test = "ttest_rel", test_kws = { alternative = "greater", method = { __call__ = ["scipy.stats", "PermutationMethod"], n_resamples = inf } } }
 aspect = 1.0
 
 [[plots.__include__]]

@@ -7,7 +7,7 @@ To reproduce figures, you need to first download `linear_ensemble_space_v_ori_os
 | Figure | Filename (in directory `figures`) |
 | ------ | --------------------------------- |
 | 2G | `resp_paper_indiv_0/numerical/dr_10_space-loss=0.53821074963-cell_type=PYR.pdf` |
-| 2H | `resp_paper_indiv_0/numerical/dr_10_mean_nearby-loss=0.53821074963-cell_type=PYR.pdf` |
+| 2H | `resp_paper_indiv_0/numerical/dr_10_mean_nearby-loss=0.53821074963-cell_type=PYR.pdf`, `resp_paper_indiv_0/numerical/dr_10_mean_nearby_transpose-loss=0.53821074963-cell_type=PYR.pdf` |
 
 # Commands for reproducing figures in directory `figures`
 

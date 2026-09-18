@@ -16,6 +16,11 @@ cpu = ["niarb[pt26cpu]", "torchdiffeq"]
 cu124 = ["niarb[pt26cu124]", "torchdiffeq"]
 cu128 = ["niarb[pt27cu128]", "torchdiffeq"]
 
+[dependency-groups]
+lint = [
+    "ruff",
+]
+
 [project.urls]
 repository = "https://github.com/hchau630/chau-2026-nonlinear"
 
