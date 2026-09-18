@@ -9,11 +9,15 @@ func = ["niarb.io", "load_data"]
 paths = { __eval__ = "path" }
 # query = "N == 10 and dh == 0"
 query = "N == 10 and distance > 15 and distance < 75"
-pivot_table = { index = ["loss", "instance_idx", "stim_idx", "density"], columns = "cell_type", values = "dr", aggfunc = ["mean", "var"] }
+pivot_table = { index = ["loss", "instance_idx", "stim_idx", "density"], columns = "cell_type", values = "dr", aggfunc = ["mean", "median", "var"] }
 
-[plots.__matrix__]
+[[plots.__matrix__]]
 x = ["var_PYR", "var_PV", "var_SST", "var_VIP"]
 y = ["mean_PYR", "mean_PV", "mean_SST", "mean_VIP"]
+
+[[plots.__matrix__]]
+x = ["var_PYR", "var_PV", "var_SST", "var_VIP"]
+y = ["median_PYR", "median_PV", "median_SST", "median_VIP"]
 
 [[plots.__include__]]
 name = { __eval__ = "f'{x}-{y}'" }
@@ -24,7 +28,7 @@ col = "loss"
 col_wrap = 5
 n_boot = 9999
 statannot = true
-statannot_kws = { method = "permutation", n_resamples = 999999, verbosity = -1, frameon = false }
+statannot_kws = { method = "permutation", n_resamples = 999999, frameon = false }
 line_kws = { color = "black" }
 scatter_kws = { s = 4, edgecolor = "none", facecolor = "black" }
 facet_kws = { sharex = false, sharey = false }
@@ -41,6 +45,10 @@ mean_PYR = "Pyr response"
 mean_PV = "PV response"
 mean_SST = "SST response"
 mean_VIP = "VIP response"
+median_PYR = "Pyr response"
+median_PV = "PV response"
+median_SST = "SST response"
+median_VIP = "VIP response"
 
 [plots.__include__.replace]
 spreadout = "Diffuse"
