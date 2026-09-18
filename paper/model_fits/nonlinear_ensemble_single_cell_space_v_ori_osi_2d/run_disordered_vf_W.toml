@@ -7,7 +7,7 @@ dataset = { __ref__ = ["fit.toml", "validation_dataset"] }
 # dataset = { __ref__ = ["fit.toml", "validation_dataset"], model_kwargs = { t = [1000.0] } }
 # pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, rf_cv = 0.1 }
 # pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, rf_cv = [0.0, 1.1, 1.1, 1.1], simulation_kwargs = { method = "tsit5", options = { max_num_steps = 100000 }, dx_rtol = 5e-4, dx_atol = 5e-6, max_t = 200.0, max_dxdt = 10000.0, max_x = 500.0, assert_convergence = false } }
-pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, rf_cv = { __call__ = ["builtins", "float", { __environ__ = "RFCV" }] }, simulation_kwargs = { method = "tsit5", options = { max_num_steps = 100000 }, dx_rtol = 5e-4, dx_atol = 5e-6, max_t = 200.0, max_dxdt = 10000.0, max_x = 70.0, assert_convergence = false } }
+pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, rf_cv = { __call__ = ["builtins", "float", { __environ__ = "RFCV" }] }, W_std = { __call__ = ["builtins", "float", { __environ__ = "WCV" }] }, simulation_kwargs = { method = "tsit5", options = { max_num_steps = 100000 }, dx_rtol = 5e-4, dx_atol = 5e-6, max_t = 200.0, max_dxdt = 10000.0, max_x = 70.0, assert_convergence = false } }
 # pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, tau = [1.0, 0.5, 2.0] }
 # pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, f = "Identity" }
 # pipeline.model = { __ref__ = ["fit.toml", "validation_pipeline", "model"], mode = { __environ__ = "MODE" }, f = "Identity", simulation_kwargs = { options = { max_num_steps = 100000 }, dx_rtol = 5e-5, max_t = 200.0, max_dxdt = 10000.0 } }
@@ -32,7 +32,7 @@ pattern = "*.pt"
 indices = { __call__ = ["builtins", "int", { __environ__ = "SLURM_ARRAY_TASK_ID" }] }
 
 [out]
-__format__ = "runs/{MODE}_disordered_vf-{RFCV}/{filename}.pkl"
+__format__ = "runs/{MODE}_disordered_vf_W-{RFCV}-{WCV}/{filename}.pkl"
 # __format__ = "runs/{MODE}_larger/{filename}.pkl"
 # __format__ = "runs/{MODE}_seed-1/{filename}.pkl"
 # __format__ = "runs/{MODE}_wrapped/{filename}.pkl"
