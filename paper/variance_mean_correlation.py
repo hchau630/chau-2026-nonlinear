@@ -35,7 +35,7 @@ def main():
     parser.add_argument("--ens-size", "-s", type=int, nargs=2, default=(9, 11))
     parser.add_argument("--min-N", type=int, default=2)
     parser.add_argument("--max-dist", type=float, default=75.0)
-    parser.add_argument("--partial-ens-size", "-p", action="store_true")
+    parser.add_argument("--partial", "-p", type=str)
     parser.add_argument("--query", "-q", type=str)
     parser.add_argument("--method", "-m", type=str, default="permutation")
     parser.add_argument("--n-boot", "-b", type=int, default=9_999)
@@ -88,6 +88,49 @@ def main():
         df["_N"] = df["_N_y"]
 
     df = df.query(f"_distance < {args.max_dist}").copy()
+    df["dr"] = df["dr"] / df["session_id"].map(
+        df.query("cell_type == 'PYR'").groupby("session_id", observed=True)["dr"].std()
+    ).astype("float")
+    # sessions = [
+    #     "MBOT75_002__20230119",
+    #     "MBOT75_001__20230119",
+    #     "MBOT75_001__20230120",
+    #     "MBOT91_857__20231003",
+    #     "MBOT210_607__20251018",
+    # ]
+    # df = df.query("session_id in @sessions").copy()
+    # SST_sessions = df[df["cell_type"] == "SST"]["session_id"].unique()
+    # print(SST_sessions)
+    # print(
+    #     df.query(
+    #         f"_N >= {args.ens_size[0]} and _N <= {args.ens_size[1]} and session_id in @SST_sessions"
+    #     )
+    #     .groupby("session_id", observed=True)["holo_id"]
+    #     .nunique()
+    #     .to_string(max_rows=100)
+    # )
+    # print(df.query("session_id == 'MBOT45_007__20220610' and cell_type == 'PV'")["dr"])
+    # print(
+    #     df.query(
+    #         f"_N >= {args.ens_size[0]} and _N <= {args.ens_size[1]} and cell_type == 'PYR'"
+    #     )["dr"].describe(percentiles=[0.4, 0.5, 0.55, 0.6])
+    # )
+
+    # viz.figplot(
+    #     df,
+    #     func="displot",
+    #     x="dr",
+    #     hue="cell_type",
+    #     # col="holo_id",
+    #     # col_wrap=5,
+    #     common_norm=False,
+    #     stat="density",
+    #     element="step",
+    #     fill=False,
+    #     outliers=[0.001, 0.999],
+    # )
+    # plt.show()
+
     df = df.groupby(
         [
             "mouse_id",
@@ -103,6 +146,7 @@ def main():
     ).agg(
         **{
             "dr": ("dr", args.estimator),
+            # "dr": ("dr", lambda x: x.quantile(0.8)),
             kind: ("dr", kind),
             "count": ("dr", "count"),
         }
@@ -119,14 +163,21 @@ def main():
     df = df.query(f"_N >= {args.ens_size[0]}").copy()
     if args.ens_size[1] >= 0:
         df = df.query(f"_N <= {args.ens_size[1]}").copy()
-    if args.partial_ens_size:
+    if args.partial:
         for cell_type, statistic in product(["PYR", "PV", "SST"], ["dr", kind]):
             col = f"{statistic}_{cell_type}"
             if statistic == kind and args.logx:
                 df[col] = np.log10(df[col])
-            df[col] = residual(df["_N"], df[col])
+            df[col] = residual(df[args.partial], df[col])
             if statistic == kind and args.logx:
                 df[col] = 10 ** df[col]
+
+    # import statsmodels.formula.api as smf
+    # from statsmodels.stats.anova import anova_lm
+
+    # common = smf.ols("dr_PYR ~ var_SST + C(session_id)", df).fit()
+    # separate = smf.ols("dr_PYR ~ var_SST * C(session_id)", df).fit()
+    # print(anova_lm(common, separate))
 
     # new_holo_ids = pd.read_pickle("ogando_data/new_holo_ids.pkl")
     # print(df.query("holo_id.isin(@new_holo_ids)"))
@@ -148,7 +199,7 @@ def main():
         "dr_PV_res": "PV response res.",
         "dr_SST_res": "SST response res.",
     }
-    if args.partial_ens_size:
+    if args.partial:
         mapping = {k: f"{v} res." for k, v in mapping.items() if not k.endswith("res")}
 
     kwargs = {
@@ -178,8 +229,10 @@ def main():
         "mapping": mapping,
     }
 
+    cell_types = ["PV", "SST"]
+    # cell_types = ["SST"]
     # E mean vs I var/std plots
-    for cell_type in ["PV", "SST"]:
+    for cell_type in cell_types:
         logger.info(f"Plotting dr_PYR vs {kind}_{cell_type}...")
         viz.figplot(
             df.query(f"~{kind}_{cell_type}.isna() and ~dr_PYR.isna()").copy(),
@@ -201,7 +254,7 @@ def main():
             plt.close()
 
     # E mean vs I var/std plots with I mean partialled out
-    for cell_type in ["PV", "SST"]:
+    for cell_type in cell_types:
         x, y, z = f"{kind}_{cell_type}", "dr_PYR", f"dr_{cell_type}"
         logger.info(f"Plotting {y} vs {x} with {z} partialled out...")
         sf = df.query(f"~{x}.isna() and ~{y}.isna() and ~{z}.isna()").copy()
@@ -231,7 +284,7 @@ def main():
             plt.close()
 
     # I mean vs I var/std plots
-    for cell_type in ["PV", "SST"]:
+    for cell_type in cell_types:
         logger.info(f"Plotting dr_{cell_type} vs {kind}_{cell_type}...")
         viz.figplot(
             df.query(f"~{kind}_{cell_type}.isna() and ~dr_{cell_type}.isna()").copy(),
@@ -253,7 +306,7 @@ def main():
             plt.close()
 
     # E mean vs I mean plots
-    for cell_type in ["PV", "SST"]:
+    for cell_type in cell_types:
         logger.info(f"Plotting dr_PYR vs dr_{cell_type}...")
         viz.figplot(
             df.query(f"~dr_{cell_type}.isna() and ~dr_PYR.isna()").copy(),
@@ -273,7 +326,7 @@ def main():
             plt.close()
 
     # E mean vs I mean plots with I var/std partialled out
-    for cell_type in ["PV", "SST"]:
+    for cell_type in cell_types:
         x, y, z = f"dr_{cell_type}", "dr_PYR", f"{kind}_{cell_type}"
         if args.logx:
             df[f"log({z})"] = np.log10(df[z])
