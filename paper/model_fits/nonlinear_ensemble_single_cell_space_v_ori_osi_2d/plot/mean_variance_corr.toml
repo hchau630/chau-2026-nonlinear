@@ -12,7 +12,8 @@ query = "N == 10 and distance > 15 and distance < 75"
 pivot_table = { index = ["loss", "instance_idx", "stim_idx", "density"], columns = "cell_type", values = "dr", aggfunc = ["mean", "var"] }
 
 [plots.__matrix__]
-x = ["var_PYR", "var_PV", "var_SST", "var_VIP"]
+# x = ["var_PYR", "var_PV", "var_SST", "var_VIP"]
+x = ["var_SST"]
 y = ["mean_PYR", "mean_PV", "mean_SST", "mean_VIP"]
 
 [[plots.__include__]]
@@ -24,7 +25,7 @@ col = "loss"
 col_wrap = 5
 n_boot = 9999
 statannot = true
-statannot_kws = { method = "permutation", n_resamples = 999999, verbosity = -1, frameon = false }
+statannot_kws = { method = "permutation", n_resamples = 999999, frameon = false, borderpad = 0.0 }
 line_kws = { color = "black" }
 scatter_kws = { s = 4, edgecolor = "none", facecolor = "black" }
 facet_kws = { sharex = false, sharey = false }

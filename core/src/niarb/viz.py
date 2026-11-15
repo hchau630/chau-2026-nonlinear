@@ -52,10 +52,11 @@ logger = logging.getLogger(__name__)
 
 TtestResult = namedtuple("TtestResult", ["statistic", "pvalue"])
 
+
 def mapped(func, mapping):
     @functools.wraps(func)
     def wrapper(data=None, **kwargs):
-        keys = {"x", "y", "hue", "col", "row", "style"}
+        keys = {"x", "y", "x_partial", "y_partial", "hue", "col", "row", "style"}
         data = data.rename(columns=mapping)
         kwargs = {
             k: mapping[v] if (k in keys) and (v in mapping) else v
@@ -228,14 +229,15 @@ def figplot(
         if statannot:
             keys = ["x", "y", "hue", "order", "hue_order"]
             if func == lmplot:
-                keys.append("logx")
+                keys = keys + ["x_partial", "y_partial", "logx"]
 
             func = lmstatplot if func == lmplot else statplot
             statannot_kws = {k: kwargs[k] for k in keys if k in kwargs} | (
                 statannot_kws or {}
             )
+            keys = {"x", "y", "x_partial", "y_partial", "hue", "col", "row", "style"}
             statannot_kws = {
-                k: mapping[v] if (k in {"x", "y", "hue"}) and (v in mapping) else v
+                k: mapping[v] if (k in keys) and (v in mapping) else v
                 for k, v in statannot_kws.items()
             }
             logger.debug(f"statannot_kws: {statannot_kws}")
@@ -455,7 +457,23 @@ def lmplot(data=None, *, x=None, **kwargs):
     logger.debug(f"data:\n{data}")
     logger.debug(f"data memory usage:\n{data.memory_usage()}")
 
-    return sns.lmplot(data=data, x=x, **kwargs)
+    g = sns.lmplot(data=data, x=x, **kwargs)
+    if kwargs.get("x_partial") is not None:
+        # temporary fix for https://github.com/mwaskom/seaborn/issues/3995
+        for ax in g.axes.flat:
+            ax.relim()
+        for ax in g.axes.flat:
+            ax.autoscale_view()
+    return g
+
+
+def _residual(x, y, keep_mean=True):
+    isnan = np.isnan(x) | np.isnan(y)
+    reg = stats.linregress(x[~isnan], y[~isnan])
+    y_res = y - (reg.intercept + reg.slope * x)
+    if keep_mean:
+        y_res = y_res - y_res.mean() + y.mean()
+    return y_res
 
 
 def lmstatplot(
@@ -464,6 +482,8 @@ def lmstatplot(
     x=None,
     y=None,
     logx=False,
+    x_partial=None,
+    y_partial=None,
     loc=None,
     alpha=0.5,
     verbosity=0,
@@ -477,8 +497,13 @@ def lmstatplot(
     rng=None,
     **kwargs,
 ):
-    if logx:
+    if logx or x_partial or y_partial:
         data = data.copy()
+    if x_partial:
+        data[x] = _residual(data[x_partial], data[x])
+    if y_partial:
+        data[y] = _residual(data[y_partial], data[y])
+    if logx:
         data[x] = np.log10(data[x])
 
     fit = sm.OLS(data[y], sm.add_constant(data[x])).fit()
@@ -670,7 +695,9 @@ def _ttest_rel(
     a, b, axis=0, nan_policy="propagate", alternative="two-sided", method=None
 ):
     if method is None:
-        return stats.ttest_rel(a, b, axis=axis, nan_policy=nan_policy, alternative=alternative)
+        return stats.ttest_rel(
+            a, b, axis=axis, nan_policy=nan_policy, alternative=alternative
+        )
 
     if not isinstance(method, stats.PermutationMethod | stats.MonteCarloMethod):
         raise TypeError(
