@@ -154,6 +154,7 @@ def main():
     df = df.query(f"~dr.isna() and count >= {args.min_N}").copy()
     df = df.pivot(
         index=["exp_type", "holo_id", "_holo_osi", "_N"],
+        # index=["exp_type", "session_id", "holo_id", "_holo_osi", "_N"],
         columns="cell_type",
         values=["dr", kind, "count"],
     )
@@ -232,8 +233,22 @@ def main():
     cell_types = ["PV", "SST"]
     # cell_types = ["SST"]
     # E mean vs I var/std plots
+    # corrs = {}
     for cell_type in cell_types:
         logger.info(f"Plotting dr_PYR vs {kind}_{cell_type}...")
+
+        # x = f"{kind}_{cell_type}"
+        # y = "dr_PYR"
+        # sf = df.query(f"~{kind}_{cell_type}.isna() and ~dr_PYR.isna()").copy()
+        # corrs[cell_type] = (
+        #     sf.groupby("session_id", observed=True)
+        #     .apply(
+        #         lambda g: pd.Series({"r": g[x].corr(g[y]), "n": len(g)}),
+        #         include_groups=False,
+        #     )
+        #     .reset_index()
+        # )
+
         viz.figplot(
             df.query(f"~{kind}_{cell_type}.isna() and ~dr_PYR.isna()").copy(),
             func="lmplot",
@@ -252,6 +267,20 @@ def main():
             plt.show()
         else:
             plt.close()
+
+    # corrs = pd.concat(corrs, names=["cell_type"]).reset_index(0)
+    # corrs = corrs.query("n >= 2").copy()
+    # print(corrs)
+    # viz.figplot(
+    #     corrs,
+    #     func="catplot",
+    #     x="cell_type",
+    #     y="r",
+    #     kind="strip",
+    #     statannot=True,
+    #     statannot_kws={"kind": "1samp", "test": "wilcoxon"},
+    # )
+    # plt.show()
 
     # E mean vs I var/std plots with I mean partialled out
     for cell_type in cell_types:
