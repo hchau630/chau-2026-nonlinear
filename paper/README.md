@@ -15,11 +15,11 @@ git submodule update
 | 1C, S1A, S1B | `plot_rnn_theory/log_normal_vary_dh_n_perturbed/*.pdf` | <pre>`python plot_rnn_theory.py resp --dh 10 15 20 25 30 --n-perturbed 1 5 10 20 50 -n 3000 --log-normal --use-t --t-max 100 --n-trials 300000 -o figures/plot_rnn_theory/log_normal_vary_dh_n_perturbed`</pre> |
 | 2B | `2b.pdf` | <pre>`python plot_distance.py -s 100 --density 8000 --min-dist 10 --scale 3 -o figures`</pre> |
 | 2D, 2E, S2C | `2d.pdf`, `2e.pdf`, `S2c.pdf` | <pre>`python plot_oldenburg_data.py oldenburg-2024-logic --2d -o figures`</pre> |
-| 2F | `2f.pdf`, `2f_inset.pdf`, `2f_ori_cmap.pdf`, `2f_ori_cmap.pdf` | <pre>`python plot_model.py -o figures`</pre> |
+| 2F | `2f.pdf`, `2f_inset.pdf`, `2f_ori_cmap.pdf`, `2f_osi_cmap.pdf` | <pre>`python plot_model.py -o figures`</pre> |
 | 2G, 2H | | See `model_fits/linear_ensemble_space_v_ori_osi_2d` |
 | 2I, 2J, 3A, 3B, 3C, 3F, S2H, S2I, S3 | | See `model_fits/nonlinear_ensemble_single_cell_space_v_ori_osi_2d_EI` |
 | 3D, 3F inset | `3d.pdf`, `3f_inset.pdf` | <pre>`python plot_mechanism.py -o figures`</pre> |
-| 4, 5, S4, S5 | | See `model_fits/nonlinear_ensemble_single_cell_space_v_ori_osi_2d` |
+| 4, 5, S4, S5, S6 | | See `model_fits/nonlinear_ensemble_single_cell_space_v_ori_osi_2d` |
 | S1C, S1D | `plot_rnn_theory/log_normal_vary_dh/rel_err_grid_*.pdf` | <pre>`python plot_rnn_theory.py resp --dh 10 15 20 25 30 --log-normal --use-t --t-max 100 --n-trials 300000 -o figures/plot_rnn_theory/log_normal_vary_dh`</pre> |
 | S2A, S2B | `S2a.pdf`, `S2b.pdf` | <pre>`python plot_oldenburg_cells.py oldenburg-2024-logic -o figures`</pre> |
 | S2D | `S2d.pdf` | <pre>`python plot_oldenburg_data.py oldenburg-2024-logic --2d --rel-ori -o figures`</pre> |

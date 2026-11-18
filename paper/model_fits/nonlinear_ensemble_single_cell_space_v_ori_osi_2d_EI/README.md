@@ -18,11 +18,11 @@ To reproduce figures, you need to first download `nonlinear_ensemble_single_cell
 | S2H | `resp_paper_indiv2_0/numerical/dr_10_space-loss=0.50309455395-cell_type=PV.pdf` |
 | S2I | `resp_paper_indiv2_0/numerical/dr_10_mean_nearby-loss=0.50309455395-cell_type=PV.pdf`, `resp_paper_indiv2_0/numerical/dr_10_mean_nearby_transpose-loss=0.50309455395-cell_type=PV.pdf` |
 | S3A (left) | `resp_compare_matrix_second_order-numerical_0/resp_space-loss=5.0309455395e-01-cell_type=PYR.pdf` |
-| S3A (right) | `resp_paper_indiv_0/matrix_second_order_approx/dr_10_mean_nearby-loss=5.0309455395e-01-cell_type=PYR.pdf`, `resp_paper_indiv_0/matrix_second_order_approx/dr_10_mean_nearby_transpose-loss=5.0309455395e-01-cell_type=PYR.pdf` |
+| S3A (right) | `resp_paper_indiv_0/matrix_second_order_approx/dr_10_mean_nearby-loss=0.50309455395-cell_type=PYR.pdf`, `resp_paper_indiv_0/matrix_second_order_approx/dr_10_mean_nearby_transpose-loss=0.50309455395-cell_type=PYR.pdf` |
 | S3B (left) | `resp_compare_matrix_quasi_linear-numerical_0/resp_space-loss=5.0309455395e-01-cell_type=PYR.pdf` |
-| S3B (right) | `resp_paper_indiv2_0/matrix_quasi_linear_approx/dr_10_mean_nearby-loss=5.0309455395e-01-cell_type=PYR.pdf`, `resp_paper_indiv2_0/matrix_quasi_linear_approx/dr_10_mean_nearby_transpose-loss=5.0309455395e-01-cell_type=PYR.pdf` |
-| S3C (left) | `resp_paper_indiv_0/matrix_quasi_linear_approx/dv_10_space_ori-loss=0.50309455395-cell_type=PYR` |
-| S3C (right) | `resp_paper_indiv_0/matrix_quasi_linear_approx/dv_10_space_ori-loss=0.50309455395-cell_type=PV` |
+| S3B (right) | `resp_paper_indiv2_0/matrix_quasi_linear_approx/dr_10_mean_nearby-loss=0.50309455395-cell_type=PYR.pdf`, `resp_paper_indiv2_0/matrix_quasi_linear_approx/dr_10_mean_nearby_transpose-loss=0.50309455395-cell_type=PYR.pdf` |
+| S3C (left) | `resp_paper_indiv_0/matrix_quasi_linear_approx/dv_10_space_ori-loss=0.50309455395-cell_type=PYR.pdf` |
+| S3C (right) | `resp_paper_indiv_0/matrix_quasi_linear_approx/dv_10_space_ori-loss=0.50309455395-cell_type=PV.pdf` |
 
 # Commands for reproducing figures in directory `figures`
 

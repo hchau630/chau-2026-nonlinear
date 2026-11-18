@@ -1,0 +1,48 @@
+cff-version: 1.2.0
+title: >-
+  Code for "A nonlinear inhibition pathway underlying
+  cortical responses to tuned holographic optogenetic
+  perturbations" (2026)
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Ho Yin
+    family-names: Chau
+    email: ho.chau@ens.psl.eu
+    affiliation: École Normale Supérieure - PSL
+    orcid: 'https://orcid.org/0009-0004-2167-2321'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.22086790
+    description: The concept DOI of the software.
+repository-code: 'https://github.com/hchau630/chau-2026-nonlinear'
+abstract: >-
+  See the top-level `README.md` at the GitHub repository for
+  instructions for reproducing the figures in the paper.
+keywords:
+  - recurrent neural network
+  - optogenetic perturbation
+  - mouse primary visual cortex
+license: MIT
+preferred-citation:
+  type: article
+  title: >-
+    A nonlinear inhibition pathway underlying cortical
+    responses to tuned holographic optogenetic perturbations
+  authors:
+    - given-names: Ho Yin
+      family-names: Chau
+    - given-names: Ian Antón
+      family-names: Oldenburg
+    - given-names: Kenneth D.
+      family-names: Miller
+    - given-names: Agostina
+      family-names: Palmigiano
+  doi: 10.64898/2026.08.27.746829
+  url: https://www.biorxiv.org/content/10.64898/2026.08.27.746829
+  year: 2026
+  journal: bioRxiv
+  publisher:
+    name: 'Cold Spring Harbor Laboratory'
